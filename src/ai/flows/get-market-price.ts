@@ -53,23 +53,47 @@ const fetchMarketDataTool = ai.defineTool(
   },
   async ({crop, mandi}) => {
     // In a real application, this would call an external API.
-    // Here, we simulate it with mock data.
+    // Here, we simulate it with more realistic mock data.
     const today = new Date();
     const priceHistory = [];
-    const basePrice = (crop.length + mandi.length) * 10 + 150;
     let currentPrice = 0;
+
+    // This function generates a pseudo-random but deterministic price for a given day.
+    const getPriceForDate = (baseDate: Date, cropStr: string, mandiStr: string) => {
+        const dateSeed = baseDate.getFullYear() * 10000 + (baseDate.getMonth() + 1) * 100 + baseDate.getDate();
+        
+        let stringSeed = 0;
+        for (let i = 0; i < cropStr.length; i++) {
+            stringSeed += cropStr.charCodeAt(i);
+        }
+        for (let i = 0; i < mandiStr.length; i++) {
+            stringSeed += mandiStr.charCodeAt(i);
+        }
+
+        const seed = dateSeed + stringSeed;
+        const pseudoRandom = () => {
+            let x = Math.sin(seed) * 10000;
+            return x - Math.floor(x);
+        };
+
+        const basePrice = 1500 + ((stringSeed*37) % 7000); // Base price between 1500 and 8500
+        const fluctuation = pseudoRandom() * basePrice * 0.2 - basePrice * 0.1; // Fluctuate by +/- 10%
+        const price = basePrice + fluctuation;
+
+        return parseFloat(price.toFixed(2));
+    }
 
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const price = basePrice + Math.random() * 40 - 20; // Fluctuate price
-      const finalPrice = parseFloat(price.toFixed(2));
+      const price = getPriceForDate(date, crop, mandi);
+      
       priceHistory.push({
         date: date.toISOString().split('T')[0],
-        price: finalPrice,
+        price: price,
       });
       if (i === 0) {
-        currentPrice = finalPrice;
+        currentPrice = price;
       }
     }
 
