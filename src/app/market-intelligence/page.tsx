@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2, Mic, Sparkles, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 import { getMarketPriceAction, speechToTextAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,12 @@ import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/page-header';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import type { GetMarketPriceOutput } from '@/ai/flows/get-market-price';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from '@/components/ui/chart';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
@@ -30,6 +37,13 @@ const formSchema = z.object({
 });
 
 type FieldName = 'crop' | 'mandi';
+
+const chartConfig = {
+  price: {
+    label: 'Price (INR)',
+    color: 'hsl(var(--primary))',
+  },
+} satisfies ChartConfig;
 
 export default function MarketIntelligencePage() {
   const [language, setLanguage] = useState('en');
@@ -205,11 +219,52 @@ export default function MarketIntelligencePage() {
                 </div>
               )}
               {result && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
                     <h3 className="font-semibold text-lg font-headline">Current Price</h3>
-                    <p className="text-2xl font-bold text-primary">{result.price}</p>
+                    <p className="text-2xl font-bold text-primary">
+                      {new Intl.NumberFormat('en-IN', {
+                        style: 'currency',
+                        currency: 'INR',
+                      }).format(result.price)}
+                    </p>
                   </div>
+
+                  {result.priceHistory && result.priceHistory.length > 0 && (
+                     <div className="space-y-2">
+                        <h3 className="font-semibold text-lg font-headline">Price Trend (Last 7 Days)</h3>
+                        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                          <LineChart accessibilityLayer data={result.priceHistory} margin={{ top: 20, left: -20, right: 20 }}>
+                            <CartesianGrid vertical={false} />
+                            <XAxis
+                              dataKey="date"
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={8}
+                              tickFormatter={(value) =>
+                                new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                              }
+                            />
+                             <YAxis
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                domain={['dataMin - 20', 'dataMax + 20']}
+                                tickFormatter={(value) => `₹${value}`}
+                             />
+                            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+                            <Line
+                              dataKey="price"
+                              type="monotone"
+                              stroke="hsl(var(--primary))"
+                              strokeWidth={2}
+                              dot={true}
+                            />
+                          </LineChart>
+                        </ChartContainer>
+                      </div>
+                  )}
+
                   <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2">
                         <TrendingUp className="h-5 w-5"/>
