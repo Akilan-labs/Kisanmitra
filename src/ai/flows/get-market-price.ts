@@ -53,53 +53,53 @@ const fetchMarketDataTool = ai.defineTool(
   },
   async ({crop, mandi}) => {
     // In a real application, this would call an external API.
-    // Here, we simulate it with more realistic mock data.
-    const today = new Date();
-    const priceHistory = [];
-    let currentPrice = 0;
-
-    // This function generates a pseudo-random but deterministic price for a given day.
-    const getPriceForDate = (baseDate: Date, cropStr: string, mandiStr: string) => {
-        const dateSeed = baseDate.getFullYear() * 10000 + (baseDate.getMonth() + 1) * 100 + baseDate.getDate();
-        
-        let stringSeed = 0;
-        for (let i = 0; i < cropStr.length; i++) {
-            stringSeed += cropStr.charCodeAt(i);
-        }
-        for (let i = 0; i < mandiStr.length; i++) {
-            stringSeed += mandiStr.charCodeAt(i);
-        }
-
-        const seed = dateSeed + stringSeed;
-        const pseudoRandom = () => {
-            let x = Math.sin(seed) * 10000;
-            return x - Math.floor(x);
-        };
-
-        const basePrice = 1500 + ((stringSeed*37) % 7000); // Base price between 1500 and 8500
-        const fluctuation = pseudoRandom() * basePrice * 0.2 - basePrice * 0.1; // Fluctuate by +/- 10%
-        const price = basePrice + fluctuation;
-
-        return parseFloat(price.toFixed(2));
-    }
-
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const price = getPriceForDate(date, crop, mandi);
-      
-      priceHistory.push({
-        date: date.toISOString().split('T')[0],
-        price: price,
-      });
-      if (i === 0) {
-        currentPrice = price;
+    // TODO: Replace the placeholder data below with a real API call to a service like Agmarknet or eNAM.
+    // You will likely need to sign up for an API key and consult their documentation.
+    
+    /*
+    // Here is an example of how you might fetch and adapt the data:
+    try {
+      // Replace with the actual API endpoint and your key
+      const response = await fetch(`https://api.example.com/marketdata?crop=${encodeURIComponent(crop)}&mandi=${encodeURIComponent(mandi)}&apikey=YOUR_API_KEY`);
+      if (!response.ok) {
+        throw new Error('API response was not ok');
       }
+      const data = await response.json();
+      
+      // Adapt the received data to match the required output structure.
+      // This is just an example and will depend on the API's response format.
+      const currentPrice = data.latestPrice;
+      const priceHistory = data.historical.map(item => ({
+        date: item.date, // ensure format is YYYY-MM-DD
+        price: item.price,
+      }));
+
+      return { currentPrice, priceHistory };
+
+    } catch (error) {
+      console.error("Failed to fetch real-time market data:", error);
+      // It's good practice to throw an error or handle it gracefully
+      throw new Error('Could not fetch real-time market data. Please try again later.');
     }
+    */
+
+    // Placeholder data: Replace this with the live data from your API call.
+    // This static data is returned to prevent the app from crashing while you implement the API call.
+    console.warn(`[Placeholder Data] Simulating API call for crop: ${crop}, mandi: ${mandi}. Implement a real API call in src/ai/flows/get-market-price.ts.`);
+    const today = new Date();
+    const priceHistory = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(today);
+        date.setDate(today.getDate() - (6 - i));
+        return {
+            date: date.toISOString().split('T')[0],
+            // Static example prices
+            price: parseFloat((1800 + i * 25 - (i % 3) * 40 + (crop.length % 5) * 15).toFixed(2)),
+        };
+    });
 
     return {
-      currentPrice,
-      priceHistory,
+      currentPrice: priceHistory[6].price,
+      priceHistory: priceHistory,
     };
   }
 );
