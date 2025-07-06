@@ -8,7 +8,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleSearch} from '@genkit-ai/googleai/tool';
 import {z} from 'genkit';
 
 const GetMarketPriceInputSchema = z.object({
@@ -38,7 +37,6 @@ export async function getMarketPrice(input: GetMarketPriceInput): Promise<GetMar
 
 const getMarketPricePrompt = ai.definePrompt({
   name: 'getMarketPricePrompt',
-  tools: [googleSearch],
   input: {schema: GetMarketPriceInputSchema},
   output: {schema: GetMarketPriceOutputSchema},
   prompt: `You are an expert market analyst for Indian farmers.
