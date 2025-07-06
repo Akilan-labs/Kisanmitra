@@ -1,4 +1,4 @@
-// 'use server';
+'use server';
 
 /**
  * @fileOverview Implements the FindGovernmentSchemes flow to search for and explain government schemes.
@@ -7,8 +7,6 @@
  * - FindGovernmentSchemesInput - The input type for the findGovernmentSchemes function.
  * - FindGovernmentSchemesOutput - The return type for the findGovernmentSchemes function.
  */
-
-'use server';
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';

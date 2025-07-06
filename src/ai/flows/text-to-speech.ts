@@ -10,7 +10,7 @@
 import {ai} from '@/ai/genkit';
 import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
-import wav from 'wav';
+import { Writer } from 'wav';
 
 const TextToSpeechInputSchema = z.object({
   text: z.string().describe('The text to convert to speech.'),
@@ -30,7 +30,7 @@ async function toWav(
   sampleWidth = 2
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const writer = new wav.Writer({
+    const writer = new Writer({
       channels,
       sampleRate: rate,
       bitDepth: sampleWidth * 8,

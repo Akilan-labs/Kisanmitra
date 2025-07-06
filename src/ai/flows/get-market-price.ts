@@ -1,4 +1,4 @@
-// 'use server';
+'use server';
 /**
  * @fileOverview Get Market Price flow for farmers.
  *
@@ -6,8 +6,6 @@
  * - GetMarketPriceInput - The input type for the getMarketPrice function.
  * - GetMarketPriceOutput - The return type for the getMarketPrice function.
  */
-
-'use server';
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
