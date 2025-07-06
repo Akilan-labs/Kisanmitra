@@ -16,6 +16,16 @@ import {
   type GetMarketPriceInput,
   type GetMarketPriceOutput,
 } from '@/ai/flows/get-market-price';
+import {
+  speechToText,
+  type SpeechToTextInput,
+  type SpeechToTextOutput,
+} from '@/ai/flows/speech-to-text';
+import {
+  textToSpeech,
+  type TextToSpeechInput,
+  type TextToSpeechOutput,
+} from '@/ai/flows/text-to-speech';
 
 const diagnoseCropDiseaseSchema = z.object({
   photoDataUri: z.string().min(1, 'Image is required.'),
@@ -80,5 +90,47 @@ export async function findGovernmentSchemesAction(
   } catch (error) {
     console.error(error);
     return { success: false, error: 'An unexpected error occurred while finding schemes. Please try again.' };
+  }
+}
+
+const speechToTextSchema = z.object({
+  audio: z.string().min(1, 'Audio data is required.'),
+  language: z.string(),
+});
+
+export async function speechToTextAction(
+  input: SpeechToTextInput
+): Promise<{ success: true; data: SpeechToTextOutput } | { success: false; error: string }> {
+  const parsed = speechToTextSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: 'Invalid audio input.' };
+  }
+  try {
+    const result = await speechToText(parsed.data);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: 'Failed to transcribe audio. Please try again.' };
+  }
+}
+
+const textToSpeechSchema = z.object({
+  text: z.string().min(1, 'Text is required.'),
+  language: z.string().optional(),
+});
+
+export async function textToSpeechAction(
+  input: TextToSpeechInput
+): Promise<{ success: true; data: TextToSpeechOutput } | { success: false; error: string }> {
+  const parsed = textToSpeechSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: 'Invalid text input.' };
+  }
+  try {
+    const result = await textToSpeech(parsed.data);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: 'Failed to convert text to speech. Please try again.' };
   }
 }

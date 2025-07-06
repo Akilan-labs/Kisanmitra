@@ -23,7 +23,9 @@ export type DiagnoseCropDiseaseInput = z.infer<typeof DiagnoseCropDiseaseInputSc
 
 const DiagnoseCropDiseaseOutputSchema = z.object({
   disease: z.string().describe('The name of the disease or pest.'),
-  remedies: z.string().describe('Localized remedies for the disease or pest.'),
+  severity: z.string().describe('The severity of the disease (e.g., Low, Medium, High).'),
+  remedies: z.string().describe('Localized and affordable remedies for the disease or pest.'),
+  immediateSteps: z.string().describe('Immediate steps the farmer should take to save the crop.'),
 });
 export type DiagnoseCropDiseaseOutput = z.infer<typeof DiagnoseCropDiseaseOutputSchema>;
 
@@ -37,10 +39,14 @@ const prompt = ai.definePrompt({
   output: {schema: DiagnoseCropDiseaseOutputSchema},
   prompt: `You are an expert in diagnosing crop diseases and recommending remedies.
 
-  Analyze the image of the diseased crop and provide a diagnosis and localized remedies in the specified language.
+Analyze the image of the diseased crop. Identify the disease, its severity, and provide actionable advice.
+- The remedies should be localized and affordable.
+- List immediate steps the farmer should take to save the crop.
 
-  Language: {{{language}}}
-  Crop Image: {{media url=photoDataUri}}
+Respond in the specified language.
+
+Language: {{{language}}}
+Crop Image: {{media url=photoDataUri}}
   `,
 });
 

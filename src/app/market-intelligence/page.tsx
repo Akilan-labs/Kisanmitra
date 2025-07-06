@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2, Mic, Sparkles, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 
-import { getMarketPriceAction } from '@/app/actions';
+import { getMarketPriceAction, speechToTextAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -29,10 +29,14 @@ const formSchema = z.object({
   mandi: z.string().min(2, 'Please enter a mandi name.'),
 });
 
+type FieldName = 'crop' | 'mandi';
+
 export default function MarketIntelligencePage() {
   const [language, setLanguage] = useState('en');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<GetMarketPriceOutput | null>(null);
+  const [isRecording, setIsRecording] = useState<FieldName | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,6 +46,58 @@ export default function MarketIntelligencePage() {
       mandi: '',
     },
   });
+
+  const handleMicClick = async (field: FieldName) => {
+    if (isRecording === field) {
+      mediaRecorderRef.current?.stop();
+      setIsRecording(null);
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      const audioChunks: Blob[] = [];
+
+      recorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+
+      recorder.onstop = async () => {
+        setIsRecording(null);
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = async () => {
+          const base64data = reader.result as string;
+          if (!base64data) return;
+
+          try {
+            const response = await speechToTextAction({ audio: base64data, language });
+            if (response.success) {
+              form.setValue(field, response.data.text, { shouldValidate: true });
+            } else {
+              toast({ title: 'Transcription Failed', description: response.error, variant: 'destructive' });
+            }
+          } catch (error) {
+            toast({ title: 'Error', description: 'Failed to process audio.', variant: 'destructive' });
+          }
+        };
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      recorder.start();
+      setIsRecording(field);
+    } catch (error) {
+      toast({
+        title: 'Microphone Access Denied',
+        description: 'Please enable microphone permissions in your browser settings.',
+        variant: 'destructive',
+      });
+    }
+  };
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -93,8 +149,8 @@ export default function MarketIntelligencePage() {
                         <FormLabel>Crop Name</FormLabel>
                         <FormControl>
                            <div className="relative">
-                            <Input placeholder="e.g., Tomato, Wheat" {...field} />
-                            <Button size="icon" variant="ghost" type="button" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-transparent">
+                            <Input placeholder="e.g., Tomato, Wheat" {...field} className="pr-10"/>
+                            <Button size="icon" variant={isRecording === 'crop' ? 'destructive' : 'ghost'} type="button" onClick={() => handleMicClick('crop')} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-transparent">
                                <Mic className="h-4 w-4" />
                             </Button>
                           </div>
@@ -111,8 +167,8 @@ export default function MarketIntelligencePage() {
                         <FormLabel>Mandi Name</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input placeholder="e.g., Yeshwanthpur, Azadpur" {...field} />
-                             <Button size="icon" variant="ghost" type="button" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-transparent">
+                            <Input placeholder="e.g., Yeshwanthpur, Azadpur" {...field} className="pr-10" />
+                             <Button size="icon" variant={isRecording === 'mandi' ? 'destructive' : 'ghost'} type="button" onClick={() => handleMicClick('mandi')} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-transparent">
                                <Mic className="h-4 w-4" />
                             </Button>
                           </div>
@@ -124,12 +180,12 @@ export default function MarketIntelligencePage() {
                 </CardContent>
                 <CardFooter>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? (
+                    {isLoading || isRecording ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    {isLoading ? 'Analyzing...' : 'Get Prices'}
+                    {isLoading ? 'Analyzing...' : isRecording ? 'Recording...' : 'Get Prices'}
                   </Button>
                 </CardFooter>
               </form>

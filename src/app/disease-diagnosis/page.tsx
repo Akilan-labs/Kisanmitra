@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Camera, FileImage, Loader2, Sparkles } from 'lucide-react';
+import { Camera, FileImage, Loader2, Sparkles, Siren, Pill, BarChart } from 'lucide-react';
 
 import { diagnoseCropDiseaseAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/page-header';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import type { DiagnoseCropDiseaseOutput } from '@/ai/flows/diagnose-crop-disease';
+import { Badge } from '@/components/ui/badge';
 
 const fileToDataUri = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -117,7 +118,7 @@ export default function DiseaseDiagnosisPage() {
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  <div className="flex aspect-video w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 hover:bg-muted/75">
+                  <div className="flex aspect-video w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 hover:bg-muted/75" onClick={() => document.getElementById('crop-image')?.click()}>
                     {imagePreview ? (
                       <Image
                         src={imagePreview}
@@ -127,7 +128,7 @@ export default function DiseaseDiagnosisPage() {
                         className="h-full w-full object-contain rounded-lg"
                       />
                     ) : (
-                      <div className="text-center text-muted-foreground" onClick={() => document.getElementById('crop-image')?.click()}>
+                      <div className="text-center text-muted-foreground">
                         <FileImage className="mx-auto h-12 w-12" />
                         <p className="mt-2">Click or tap to upload an image</p>
                         <p className="text-xs">PNG, JPG, WEBP supported</p>
@@ -166,13 +167,30 @@ export default function DiseaseDiagnosisPage() {
                 </div>
               )}
               {result && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-lg font-headline">Disease/Pest</h3>
+                    <h3 className="font-semibold text-lg font-headline mb-1">Disease/Pest</h3>
                     <p className="text-foreground/90">{result.disease}</p>
                   </div>
+                   <div>
+                    <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                      <BarChart className="h-5 w-5" />
+                      Severity
+                    </h3>
+                    <Badge variant={result.severity.toLowerCase() === 'high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'}>{result.severity}</Badge>
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-lg font-headline">Suggested Remedies</h3>
+                    <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                      <Siren className="h-5 w-5" />
+                      Immediate Steps
+                    </h3>
+                    <p className="text-foreground/90 whitespace-pre-wrap">{result.immediateSteps}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                      <Pill className="h-5 w-5" />
+                      Suggested Remedies
+                    </h3>
                     <p className="text-foreground/90 whitespace-pre-wrap">{result.remedies}</p>
                   </div>
                 </div>
