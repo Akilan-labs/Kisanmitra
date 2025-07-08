@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Predicts crop yield based on various agricultural factors.
+ * @fileOverview Predicts crop yield based on various agricultural factors and an optional image.
  *
  * - predictYield - A function that handles the crop yield prediction process.
  * - PredictYieldInput - The input type for the predictYield function.
@@ -18,6 +18,9 @@ const PredictYieldInputSchema = z.object({
   rainfall: z.number().positive().describe('The average annual rainfall in mm.'),
   region: z.string().describe('The geographical region or state.'),
   language: z.string().describe('The language for the response.'),
+  photoDataUri: z.string().optional().describe(
+    "An optional photo of the crop field, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+  ),
 });
 export type PredictYieldInput = z.infer<typeof PredictYieldInputSchema>;
 
@@ -47,7 +50,9 @@ const prompt = ai.definePrompt({
   input: {schema: PredictYieldInputSchema},
   output: {schema: PredictYieldOutputSchema},
   prompt: `You are an expert agronomist and data scientist. Your task is to predict crop yield based on the provided factors.
-
+{{#if photoDataUri}}
+Use the provided image to assess crop health, density, and any visible signs of stress or disease. This should be a key factor in your prediction.
+{{/if}}
 Use your knowledge base and perform a web search for recent data related to crop yields for the specified region and conditions to improve your prediction.
 
 1.  **Analyze the inputs:**
@@ -56,12 +61,16 @@ Use your knowledge base and perform a web search for recent data related to crop
     -   Soil Type: {{{soilType}}}
     -   Annual Rainfall: {{{rainfall}}} mm
     -   Region: {{{region}}}
+    {{#if photoDataUri}}-   Image Analysis: Use the image to inform your prediction.{{/if}}
 
 2.  **Predict the Yield:** Based on the analysis, predict the likely yield. Provide a realistic range (e.g., "10-12 tonnes per acre").
 3.  **Provide Recommendations:** Offer specific, actionable advice to improve the farmer's yield. This could include suggestions on fertilizer use, irrigation techniques, crop rotation, or pest management suitable for the region.
-4.  **State Confidence Level:** Indicate your confidence in the prediction (High, Medium, or Low) and briefly explain why. For example, confidence might be lower if data for that specific region is scarce.
+4.  **State Confidence Level:** Indicate your confidence in the prediction (High, Medium, or Low) and briefly explain why. For example, confidence might be lower if data for that specific region is scarce or if the image quality is poor.
 
 Respond in the specified language: {{{language}}}.
+{{#if photoDataUri}}
+Crop Field Image: {{media url=photoDataUri}}
+{{/if}}
 `,
 });
 

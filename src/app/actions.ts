@@ -147,6 +147,7 @@ const predictYieldSchema = z.object({
   rainfall: z.coerce.number().positive('Rainfall must be a positive number.'),
   region: z.string().min(2, 'Please enter a region.'),
   language: z.string(),
+  photoDataUri: z.string().optional(),
 });
 
 export async function predictYieldAction(
@@ -154,7 +155,8 @@ export async function predictYieldAction(
 ): Promise<{ success: true; data: PredictYieldOutput } | { success: false; error: string }> {
   const parsed = predictYieldSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: 'Invalid input. Please check the form and try again.' };
+    const errorMessage = Object.values(parsed.error.flatten().fieldErrors).flat()[0] ?? 'Invalid input. Please check the form and try again.';
+    return { success: false, error: errorMessage };
   }
 
   try {
