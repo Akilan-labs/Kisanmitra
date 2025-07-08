@@ -26,6 +26,11 @@ import {
   type TextToSpeechInput,
   type TextToSpeechOutput,
 } from '@/ai/flows/text-to-speech';
+import {
+  predictYield,
+  type PredictYieldInput,
+  type PredictYieldOutput,
+} from '@/ai/flows/predict-yield';
 
 const diagnoseCropDiseaseSchema = z.object({
   photoDataUri: z.string().min(1, 'Image is required.'),
@@ -132,5 +137,31 @@ export async function textToSpeechAction(
   } catch (error) {
     console.error(error);
     return { success: false, error: 'Failed to convert text to speech. Please try again.' };
+  }
+}
+
+const predictYieldSchema = z.object({
+  crop: z.string().min(2, 'Please enter a crop name.'),
+  area: z.coerce.number().positive('Area must be a positive number.'),
+  soilType: z.string().min(1, 'Please select a soil type.'),
+  rainfall: z.coerce.number().positive('Rainfall must be a positive number.'),
+  region: z.string().min(2, 'Please enter a region.'),
+  language: z.string(),
+});
+
+export async function predictYieldAction(
+  input: PredictYieldInput
+): Promise<{ success: true; data: PredictYieldOutput } | { success: false; error: string }> {
+  const parsed = predictYieldSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: 'Invalid input. Please check the form and try again.' };
+  }
+
+  try {
+    const result = await predictYield(parsed.data);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: 'An unexpected error occurred during yield prediction. Please try again.' };
   }
 }

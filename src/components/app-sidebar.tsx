@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Leaf, LineChart, ScrollText } from 'lucide-react';
+import { Leaf, LineChart, ScrollText, Warehouse } from 'lucide-react';
 
 import {
   Sidebar,
@@ -18,6 +18,7 @@ const links = [
   { href: '/disease-diagnosis', label: 'Crop Disease', icon: Leaf },
   { href: '/market-intelligence', label: 'Market Prices', icon: LineChart },
   { href: '/government-schemes', label: 'Govt. Schemes', icon: ScrollText },
+  { href: '/yield-prediction', label: 'Yield Prediction', icon: Warehouse },
 ];
 
 export function AppSidebar() {
