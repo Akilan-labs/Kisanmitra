@@ -4,8 +4,8 @@
  * @fileOverview Diagnoses crop diseases from an image and provides localized remedies.
  *
  * - diagnoseCropDisease - A function that handles the crop disease diagnosis process.
- * - DiagnoseCropDiseaseInput - The input type for the diagnoseCropDisease function.
- * - DiagnoseCropDiseaseOutput - The return type for the diagnoseCropDisease function.
+ * - DiagnoseCropDiseaseInput - The input type for the diagnoseCropdisease function.
+ * - DiagnoseCropDiseaseOutput - The return type for the diagnoseCropdisease function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -15,13 +15,14 @@ const DiagnoseCropDiseaseInputSchema = z.object({
   photoDataUri: z
     .string()
     .describe(
-      'A photo of the diseased crop, as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' /* updated */
+      "A photo of the diseased crop, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
   language: z.string().describe('The language for the diagnosis and remedies.'),
 });
 export type DiagnoseCropDiseaseInput = z.infer<typeof DiagnoseCropDiseaseInputSchema>;
 
 const DiagnoseCropDiseaseOutputSchema = z.object({
+  cropName: z.string().describe('The name of the crop identified from the image.'),
   disease: z.string().describe('The name of the disease or pest.'),
   severity: z.string().describe('The severity of the disease (e.g., Low, Medium, High).'),
   remedies: z.string().describe('Localized and affordable remedies for the disease or pest.'),
@@ -37,9 +38,10 @@ const prompt = ai.definePrompt({
   name: 'diagnoseCropDiseasePrompt',
   input: {schema: DiagnoseCropDiseaseInputSchema},
   output: {schema: DiagnoseCropDiseaseOutputSchema},
-  prompt: `You are an expert in diagnosing crop diseases and recommending remedies.
+  prompt: `You are an expert in identifying plants and diagnosing crop diseases.
 
-Analyze the image of the diseased crop. Identify the disease, its severity, and provide actionable advice.
+First, identify the crop in the image.
+Then, analyze the image of the diseased crop. Identify the disease, its severity, and provide actionable advice.
 - The remedies should be localized and affordable.
 - List immediate steps the farmer should take to save the crop.
 

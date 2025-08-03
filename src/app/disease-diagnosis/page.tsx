@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Camera, FileImage, Loader2, Sparkles, Siren, Pill, BarChart } from 'lucide-react';
+import { Camera, FileImage, Loader2, Sparkles, Siren, Pill, BarChart, Leaf } from 'lucide-react';
 
 import { diagnoseCropDiseaseAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -168,6 +168,13 @@ export default function DiseaseDiagnosisPage() {
               )}
               {result && (
                 <div className="space-y-6">
+                  <div>
+                    <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                      <Leaf className="h-5 w-5" />
+                      Identified Crop
+                    </h3>
+                    <p className="text-foreground/90">{result.cropName}</p>
+                  </div>
                   <div>
                     <h3 className="font-semibold text-lg font-headline mb-1">Disease/Pest</h3>
                     <p className="text-foreground/90">{result.disease}</p>
