@@ -25,7 +25,7 @@ const DiagnoseCropDiseaseOutputSchema = z.object({
   cropName: z.string().describe('The name of the crop identified from the image.'),
   disease: z.string().describe('The name of the disease or pest.'),
   severity: z.string().describe('The severity of the disease (e.g., Low, Medium, High).'),
-  remedies: z.string().describe('Localized and affordable remedies for the disease or pest.'),
+  remedies: z.string().describe('General affordable remedies for the disease or pest.'),
   immediateSteps: z.string().describe('Immediate steps the farmer should take to save the crop.'),
   preventiveMeasures: z.string().describe('Detailed preventive measures to avoid this issue in the future.'),
   organicRemedies: z.string().describe('Organic and natural remedies for the identified disease/pest.'),

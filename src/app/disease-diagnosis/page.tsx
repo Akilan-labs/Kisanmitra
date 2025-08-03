@@ -273,7 +273,7 @@ export default function DiseaseDiagnosisPage() {
                 AI-powered analysis and suggested remedies.
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1">
+            <CardContent className="flex-1 overflow-y-auto">
               {isLoading && (
                 <div className="flex h-full items-center justify-center text-muted-foreground">
                   <Loader2 className="h-8 w-8 animate-spin" />
@@ -309,11 +309,11 @@ export default function DiseaseDiagnosisPage() {
 
                   <Tabs defaultValue="remedies" className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="remedies">Remedies</TabsTrigger>
+                      <TabsTrigger value="remedies">General</TabsTrigger>
                       <TabsTrigger value="organic">Organic</TabsTrigger>
                       <TabsTrigger value="chemical">Chemical</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="remedies" className="mt-4 space-y-4">
+                    <TabsContent value="remedies" className="mt-4 space-y-2">
                        <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
                           <Pill className="h-5 w-5 text-primary" />
                           Suggested Remedies
