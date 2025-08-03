@@ -1,8 +1,9 @@
+
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Leaf, LineChart, ScrollText, Warehouse } from 'lucide-react';
+import { Bot, Leaf, LineChart, ScrollText, Warehouse } from 'lucide-react';
 
 import {
   Sidebar,
@@ -19,6 +20,7 @@ const links = [
   { href: '/market-intelligence', label: 'Market Prices', icon: LineChart },
   { href: '/government-schemes', label: 'Govt. Schemes', icon: ScrollText },
   { href: '/yield-prediction', label: 'Yield Prediction', icon: Warehouse },
+  { href: '/ai-assistant', label: 'AI Assistant', icon: Bot },
 ];
 
 export function AppSidebar() {

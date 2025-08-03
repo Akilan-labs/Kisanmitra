@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -31,6 +32,12 @@ import {
   type PredictYieldInput,
   type PredictYieldOutput,
 } from '@/ai/flows/predict-yield';
+import {
+  askAI,
+  type AskAIInput,
+  type AskAIOutput,
+} from '@/ai/flows/ask-ai';
+
 
 const diagnoseCropDiseaseSchema = z.object({
   photoDataUri: z.string().min(1, 'Image is required.'),
@@ -165,5 +172,33 @@ export async function predictYieldAction(
   } catch (error) {
     console.error(error);
     return { success: false, error: 'An unexpected error occurred during yield prediction. Please try again.' };
+  }
+}
+
+const askAISchema = z.object({
+  query: z.string().min(1, "Query cannot be empty."),
+  language: z.string(),
+  history: z.array(z.object({
+    role: z.enum(['user', 'assistant']),
+    text: z.string(),
+  })).optional(),
+});
+
+
+export async function askAIAction(
+  input: AskAIInput
+): Promise<{ success: true; data: AskAIOutput } | { success: false; error: string }> {
+  const parsed = askAISchema.safeParse(input);
+  if (!parsed.success) {
+    const errorMessage = Object.values(parsed.error.flatten().fieldErrors).flat()[0] ?? 'Invalid input.';
+    return { success: false, error: errorMessage };
+  }
+
+  try {
+    const result = await askAI(parsed.data);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: 'An unexpected error occurred. Please try again.' };
   }
 }
