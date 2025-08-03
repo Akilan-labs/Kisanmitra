@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, FileImage, Loader2, Sparkles, Siren, Pill, BarChart, Leaf } from 'lucide-react';
+import { Camera, FileImage, Loader2, Sparkles, Siren, Pill, BarChart, Leaf, Shield, TestTube, TreeDeciduous } from 'lucide-react';
 
 import { diagnoseCropDiseaseAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,9 @@ import { PageHeader } from '@/components/page-header';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import type { DiagnoseCropDiseaseOutput } from '@/ai/flows/diagnose-crop-disease';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 
 const fileToDataUri = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -41,7 +44,88 @@ export default function DiseaseDiagnosisPage() {
   const [result, setResult] = useState<DiagnoseCropDiseaseOutput | null>(null);
   const { toast } = useToast();
 
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setHasCameraPermission(false);
+        return;
+      }
+      try {
+        // This won't actually start the stream, just checks for permission
+        const stream = await navigator.mediaDevices.getUserMedia({video: true});
+        setHasCameraPermission(true);
+        // Stop the tracks immediately after checking permission to not leave the camera on.
+        stream.getTracks().forEach(track => track.stop());
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+      }
+    };
+    getCameraPermission();
+  }, []);
+  
+  const startVideoStream = async () => {
+    if (videoRef.current && hasCameraPermission) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        videoRef.current.srcObject = stream;
+        setIsCameraOpen(true);
+      } catch (err) {
+        toast({
+          variant: 'destructive',
+          title: 'Could not start camera',
+          description: 'Please ensure camera permissions are enabled.',
+        });
+      }
+    }
+  };
+
+  const stopVideoStream = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
+      videoRef.current.srcObject = null;
+      setIsCameraOpen(false);
+    }
+  };
+
+  const handleCameraOpen = () => {
+    setResult(null);
+    setImagePreview(null);
+    setImageFile(null);
+    startVideoStream();
+  };
+  
+  const handleCapture = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      context?.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUri = canvas.toDataURL('image/jpeg');
+      
+      setImagePreview(dataUri);
+      
+      canvas.toBlob(blob => {
+          if (blob) {
+              const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
+              setImageFile(file);
+          }
+      }, 'image/jpeg');
+
+      stopVideoStream();
+    }
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    stopVideoStream();
     const file = event.target.files?.[0];
     if (file) {
       setImageFile(file);
@@ -118,31 +202,60 @@ export default function DiseaseDiagnosisPage() {
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  <div className="flex aspect-video w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 hover:bg-muted/75" onClick={() => document.getElementById('crop-image')?.click()}>
-                    {imagePreview ? (
+                  <canvas ref={canvasRef} className="hidden" />
+
+                  <div className="aspect-video w-full rounded-lg border-2 border-dashed bg-muted/50 flex items-center justify-center overflow-hidden">
+                    {isCameraOpen ? (
+                       <video ref={videoRef} className="h-full w-full object-cover" autoPlay playsInline muted/>
+                    ) : imagePreview ? (
                       <Image
                         src={imagePreview}
                         alt="Crop preview"
                         width={600}
                         height={400}
-                        className="h-full w-full object-contain rounded-lg"
+                        className="h-full w-full object-contain"
                       />
                     ) : (
-                      <div className="text-center text-muted-foreground">
+                      <div className="text-center text-muted-foreground p-4 cursor-pointer" onClick={() => document.getElementById('crop-image')?.click()}>
                         <FileImage className="mx-auto h-12 w-12" />
                         <p className="mt-2">Click or tap to upload an image</p>
                         <p className="text-xs">PNG, JPG, WEBP supported</p>
                       </div>
                     )}
                   </div>
-                   <Button type="button" variant="outline" className="w-full" onClick={() => document.getElementById('crop-image')?.click()}>
-                      <Camera className="mr-2 h-4 w-4" />
-                      {imagePreview ? 'Change Image' : 'Upload Image'}
-                    </Button>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {isCameraOpen ? (
+                      <>
+                        <Button type="button" onClick={handleCapture} className="w-full">
+                          <Camera className="mr-2 h-4 w-4" /> Capture Photo
+                        </Button>
+                        <Button type="button" variant="outline" onClick={stopVideoStream} className="w-full">
+                           Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button type="button" variant="outline" className="w-full" onClick={() => document.getElementById('crop-image')?.click()}>
+                          <FileImage className="mr-2 h-4 w-4" />
+                          {imagePreview ? 'Change Image' : 'Upload Image'}
+                        </Button>
+                        <Button type="button" className="w-full" onClick={handleCameraOpen} disabled={!hasCameraPermission}>
+                          <Camera className="mr-2 h-4 w-4" />
+                          Use Camera
+                        </Button>
+                      </>
+                    )}
+                   </div>
+                   {hasCameraPermission === false && (
+                    <Alert variant="destructive">
+                      <AlertTitle>Camera Access Denied</AlertTitle>
+                      <AlertDescription>Please enable camera permissions in your browser settings to use this feature.</AlertDescription>
+                    </Alert>
+                   )}
                 </div>
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full" disabled={isLoading || !imageFile}>
+                <Button type="submit" className="w-full" disabled={isLoading || !imageFile || isCameraOpen}>
                   {isLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
@@ -170,7 +283,7 @@ export default function DiseaseDiagnosisPage() {
                 <div className="space-y-6">
                   <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
-                      <Leaf className="h-5 w-5" />
+                      <Leaf className="h-5 w-5 text-primary" />
                       Identified Crop
                     </h3>
                     <p className="text-foreground/90">{result.cropName}</p>
@@ -181,24 +294,54 @@ export default function DiseaseDiagnosisPage() {
                   </div>
                    <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
-                      <BarChart className="h-5 w-5" />
+                      <BarChart className="h-5 w-5 text-primary" />
                       Severity
                     </h3>
                     <Badge variant={result.severity.toLowerCase() === 'high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'}>{result.severity}</Badge>
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
-                      <Siren className="h-5 w-5" />
+                      <Siren className="h-5 w-5 text-destructive" />
                       Immediate Steps
                     </h3>
                     <p className="text-foreground/90 whitespace-pre-wrap">{result.immediateSteps}</p>
                   </div>
+
+                  <Tabs defaultValue="remedies" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
+                      <TabsTrigger value="remedies">Remedies</TabsTrigger>
+                      <TabsTrigger value="organic">Organic</TabsTrigger>
+                      <TabsTrigger value="chemical">Chemical</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="remedies" className="mt-4 space-y-4">
+                       <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                          <Pill className="h-5 w-5 text-primary" />
+                          Suggested Remedies
+                        </h3>
+                       <p className="text-foreground/90 whitespace-pre-wrap">{result.remedies}</p>
+                    </TabsContent>
+                    <TabsContent value="organic" className="mt-4">
+                       <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                          <TreeDeciduous className="h-5 w-5 text-primary" />
+                          Organic Remedies
+                        </h3>
+                       <p className="text-foreground/90 whitespace-pre-wrap">{result.organicRemedies}</p>
+                    </TabsContent>
+                     <TabsContent value="chemical" className="mt-4">
+                       <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                          <TestTube className="h-5 w-5 text-primary" />
+                          Chemical Remedies
+                        </h3>
+                       <p className="text-foreground/90 whitespace-pre-wrap">{result.chemicalRemedies}</p>
+                    </TabsContent>
+                  </Tabs>
+
                   <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
-                      <Pill className="h-5 w-5" />
-                      Suggested Remedies
+                      <Shield className="h-5 w-5 text-primary" />
+                      Preventive Measures
                     </h3>
-                    <p className="text-foreground/90 whitespace-pre-wrap">{result.remedies}</p>
+                    <p className="text-foreground/90 whitespace-pre-wrap">{result.preventiveMeasures}</p>
                   </div>
                 </div>
               )}
