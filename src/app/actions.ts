@@ -36,6 +36,16 @@ import {
   type AskAIInput,
   type AskAIOutput,
 } from '@/ai/flows/ask-ai';
+import {
+  getWeatherForecast,
+  type GetWeatherForecastInput,
+  type GetWeatherForecastOutput,
+} from '@/ai/flows/get-weather-forecast';
+import {
+  forecastDiseaseOutbreak,
+  type ForecastDiseaseOutbreakInput,
+  type ForecastDiseaseOutbreakOutput,
+} from '@/ai/flows/forecast-disease-outbreak';
 
 
 const diagnoseCropDiseaseSchema = z.object({
@@ -200,5 +210,49 @@ export async function askAIAction(
   } catch (error) {
     console.error(error);
     return { success: false, error: 'An unexpected error occurred. Please try again.' };
+  }
+}
+
+const getWeatherForecastSchema = z.object({
+  location: z.string().min(2, 'Please enter a location.'),
+  language: z.string(),
+});
+
+export async function getWeatherForecastAction(
+  input: GetWeatherForecastInput
+): Promise<{ success: true; data: GetWeatherForecastOutput } | { success: false; error: string }> {
+  const parsed = getWeatherForecastSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: 'Invalid input. Please provide a location.' };
+  }
+  try {
+    const result = await getWeatherForecast(parsed.data);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: 'An unexpected error occurred while fetching the forecast. Please try again.' };
+  }
+}
+
+const forecastDiseaseOutbreakSchema = z.object({
+  crop: z.string().min(2, 'Please enter a crop name.'),
+  region: z.string().min(2, 'Please enter a region.'),
+  language: z.string(),
+});
+
+export async function forecastDiseaseOutbreakAction(
+  input: ForecastDiseaseOutbreakInput
+): Promise<{ success: true; data: ForecastDiseaseOutbreakOutput } | { success: false; error: string }> {
+  const parsed = forecastDiseaseOutbreakSchema.safeParse(input);
+  if (!parsed.success) {
+    const errorMessage = Object.values(parsed.error.flatten().fieldErrors).flat()[0] ?? 'Invalid input. Please check the form and try again.';
+    return { success: false, error: errorMessage };
+  }
+  try {
+    const result = await forecastDiseaseOutbreak(parsed.data);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: 'An unexpected error occurred during the forecast. Please try again.' };
   }
 }

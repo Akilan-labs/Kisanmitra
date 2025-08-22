@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, Leaf, LineChart, ScrollText, Warehouse } from 'lucide-react';
+import { Bot, Leaf, LineChart, ScrollText, Warehouse, CloudSun, ShieldAlert } from 'lucide-react';
 
 import {
   Sidebar,
@@ -31,6 +31,8 @@ function SidebarNavigation() {
     { href: '/market-intelligence', label: t('sidebar_market_prices'), icon: LineChart },
     { href: '/government-schemes', label: t('sidebar_govt_schemes'), icon: ScrollText },
     { href: '/yield-prediction', label: t('sidebar_yield_prediction'), icon: Warehouse },
+    { href: '/weather-forecast', label: t('sidebar_weather_forecast'), icon: CloudSun },
+    { href: '/disease-outbreak-forecast', label: t('sidebar_disease_outbreak_forecast'), icon: ShieldAlert },
     { href: '/ai-assistant', label: t('sidebar_ai_assistant'), icon: Bot },
   ];
   return (

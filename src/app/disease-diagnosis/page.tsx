@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, FileImage, Loader2, Sparkles, Siren, Pill, BarChart, Leaf, Shield, TestTube, TreeDeciduous } from 'lucide-react';
+import { Camera, FileImage, Loader2, Sparkles, Siren, Pill, BarChart, Leaf, Shield, TestTube, TreeDeciduous, TrendingUp } from 'lucide-react';
 
 import { diagnoseCropDiseaseAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -319,6 +319,18 @@ export default function DiseaseDiagnosisPage() {
                        <AlertTitle className="font-headline text-lg">{t('immediate_steps_label')}</AlertTitle>
                        <AlertDescription className="whitespace-pre-wrap">{result.immediateSteps}</AlertDescription>
                     </Alert>
+
+                     <Card>
+                        <CardHeader>
+                          <CardTitle className="font-headline text-lg flex items-center gap-2">
+                            <TrendingUp className="h-5 w-5 text-primary" />
+                            {t('disease_progression_label')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-foreground/90 whitespace-pre-wrap">{result.diseaseProgression}</p>
+                        </CardContent>
+                    </Card>
 
                     <div className="space-y-4">
                         <Card>

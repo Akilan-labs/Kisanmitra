@@ -30,6 +30,7 @@ const DiagnoseCropDiseaseOutputSchema = z.object({
   preventiveMeasures: z.string().describe('Detailed preventive measures to avoid this issue in the future.'),
   organicRemedies: z.string().describe('Organic and natural remedies for the identified disease/pest.'),
   chemicalRemedies: z.string().describe('Chemical-based (pesticide/fungicide) remedies for the identified disease/pest.'),
+  diseaseProgression: z.string().describe('A forecast of how the disease will progress over time if left untreated, detailing the next stages and symptoms.'),
 });
 export type DiagnoseCropDiseaseOutput = z.infer<typeof DiagnoseCropDiseaseOutputSchema>;
 
@@ -48,12 +49,13 @@ Analyze the image provided and follow these steps:
 1.  **Identify the Crop:** First, identify the crop in the image.
 2.  **Identify the Disease/Pest:** Analyze the image for signs of disease or pest infestation. Identify the specific issue.
 3.  **Assess Severity:** Determine the severity of the problem (e.g., Low, Medium, High).
-4.  **Provide Immediate Steps:** List the most critical actions the farmer should take right away to mitigate damage.
-5.  **Suggest Remedies:**
+4.  **Forecast Disease Progression:** Describe the likely stages and symptoms of the disease if it is left untreated over the next 1-3 weeks. This is critical.
+5.  **Provide Immediate Steps:** List the most critical actions the farmer should take right away to mitigate damage.
+6.  **Suggest Remedies:**
     *   Provide a section for **General Remedies**.
     *   Provide a dedicated section for **Organic Remedies**.
     *   Provide a dedicated section for **Chemical Remedies**. Ensure remedies are affordable and likely to be locally available.
-6.  **Outline Preventive Measures:** Detail the steps the farmer can take in the future to prevent a recurrence of this issue.
+7.  **Outline Preventive Measures:** Detail the steps the farmer can take in the future to prevent a recurrence of this issue.
 
 Respond in the specified language.
 

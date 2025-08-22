@@ -9,3 +9,5 @@ import '@/ai/flows/speech-to-text.ts';
 import '@/ai/flows/text-to-speech.ts';
 import '@/ai/flows/predict-yield.ts';
 import '@/ai/flows/ask-ai.ts';
+import '@/ai/flows/get-weather-forecast.ts';
+import '@/ai/flows/forecast-disease-outbreak.ts';
