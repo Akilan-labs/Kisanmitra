@@ -23,7 +23,6 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import type { DiagnoseCropDiseaseOutput } from '@/ai/flows/diagnose-crop-disease';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslation } from '@/hooks/use-translation';
 import { useLanguage } from '@/hooks/use-language';
 
@@ -70,7 +69,7 @@ export default function DiseaseDiagnosisPage() {
     };
     getCameraPermission();
   }, []);
-  
+
   const startVideoStream = async () => {
     if (videoRef.current && hasCameraPermission) {
       try {
@@ -107,7 +106,7 @@ export default function DiseaseDiagnosisPage() {
     setImageFile(null);
     startVideoStream();
   };
-  
+
   const handleCapture = () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
@@ -188,7 +187,7 @@ export default function DiseaseDiagnosisPage() {
         <LanguageSwitcher />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-8 lg:grid-cols-2">
           <Card>
             <form onSubmit={handleSubmit}>
               <CardHeader>
@@ -273,96 +272,114 @@ export default function DiseaseDiagnosisPage() {
               </CardFooter>
             </form>
           </Card>
-          <Card className="flex flex-col">
-            <CardHeader>
-              <CardTitle>{t('diagnosis_result_title')}</CardTitle>
-              <CardDescription>
-                {t('diagnosis_result_description')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto">
-              {isLoading && (
-                <div className="flex h-full items-center justify-center text-muted-foreground">
-                  <Loader2 className="h-8 w-8 animate-spin" />
-                </div>
-              )}
-              {result && (
-                <div className="space-y-6">
-                    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                           <div className="flex items-start gap-4">
-                                <Leaf className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
-                                <div>
-                                    <h3 className="font-semibold text-muted-foreground">{t('identified_crop_label')}</h3>
-                                    <p className="font-headline text-lg">{result.cropName}</p>
-                                </div>
-                            </div>
-                             <div className="flex items-start gap-4">
-                                <BarChart className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
-                                <div>
-                                    <h3 className="font-semibold text-muted-foreground">{t('severity_label')}</h3>
-                                    <Badge variant={result.severity.toLowerCase() === 'high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'} className="text-base">{result.severity}</Badge>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="border-t p-6">
-                             <div className="flex items-start gap-4">
-                                <TestTube className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
-                                <div>
-                                    <h3 className="font-semibold text-muted-foreground">{t('disease_pest_label')}</h3>
-                                    <p className="font-headline text-lg">{result.disease}</p>
-                                </div>
-                            </div>
-                        </div>
+          <div className="space-y-6">
+             <CardHeader className="p-0">
+                <CardTitle>{t('diagnosis_result_title')}</CardTitle>
+                <CardDescription>
+                  {t('diagnosis_result_description')}
+                </CardDescription>
+              </CardHeader>
+              <div className="space-y-6">
+                {isLoading && (
+                  <div className="flex h-full items-center justify-center text-muted-foreground pt-16">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+                )}
+                {result && (
+                  <div className="space-y-6">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <Card>
+                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{t('identified_crop_label')}</CardTitle>
+                            <Leaf className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-2xl font-bold font-headline">{result.cropName}</div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{t('severity_label')}</CardTitle>
+                            <BarChart className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                            <Badge variant={result.severity.toLowerCase() === 'high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'} className="text-base">{result.severity}</Badge>
+                          </CardContent>
+                        </Card>
+                      </div>
+                       <Card>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{t('disease_pest_label')}</CardTitle>
+                            <TestTube className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-2xl font-bold font-headline">{result.disease}</div>
+                          </CardContent>
+                        </Card>
+                    
+                    <Alert variant="destructive">
+                       <Siren className="h-4 w-4" />
+                       <AlertTitle className="font-headline text-lg">{t('immediate_steps_label')}</AlertTitle>
+                       <AlertDescription className="whitespace-pre-wrap">{result.immediateSteps}</AlertDescription>
+                    </Alert>
+
+                    <div className="space-y-4">
+                        <Card>
+                          <CardHeader>
+                              <CardTitle className="font-headline text-lg flex items-center gap-2">
+                                  <Pill className="h-5 w-5 text-primary" />
+                                  {t('suggested_remedies_label')}
+                              </CardTitle>
+                          </CardHeader>
+                           <CardContent>
+                              <p className="text-foreground/90 whitespace-pre-wrap">{result.remedies}</p>
+                           </CardContent>
+                        </Card>
+                           <Card>
+                          <CardHeader>
+                              <CardTitle className="font-headline text-lg flex items-center gap-2">
+                                  <TreeDeciduous className="h-5 w-5 text-primary" />
+                                  {t('organic_remedies_label')}
+                              </Title>
+                          </CardHeader>
+                           <CardContent>
+                              <p className="text-foreground/90 whitespace-pre-wrap">{result.organicRemedies}</p>
+                           </CardContent>
+                        </Card>
+                         <Card>
+                          <CardHeader>
+                              <CardTitle className="font-headline text-lg flex items-center gap-2">
+                                  <TestTube className="h-5 w-5 text-primary" />
+                                  {t('chemical_remedies_label')}
+                              </Title>
+                          </CardHeader>
+                           <CardContent>
+                              <p className="text-foreground/90 whitespace-pre-wrap">{result.chemicalRemedies}</p>
+                           </CardContent>
+                        </Card>
                     </div>
-                  
-                  <Alert variant="destructive">
-                     <Siren className="h-4 w-4" />
-                     <AlertTitle className="font-headline text-lg">{t('immediate_steps_label')}</AlertTitle>
-                     <AlertDescription className="whitespace-pre-wrap">{result.immediateSteps}</AlertDescription>
-                  </Alert>
 
-                  <div className="space-y-4">
-                        <div>
-                            <h3 className="font-headline text-lg font-semibold flex items-center gap-2 mb-2">
-                                <Pill className="h-5 w-5 text-primary" />
-                                {t('suggested_remedies_label')}
-                            </h3>
-                            <p className="text-foreground/90 whitespace-pre-wrap">{result.remedies}</p>
-                        </div>
-                         <div>
-                            <h3 className="font-headline text-lg font-semibold flex items-center gap-2 mb-2">
-                                <TreeDeciduous className="h-5 w-5 text-primary" />
-                                {t('organic_remedies_label')}
-                            </h3>
-                            <p className="text-foreground/90 whitespace-pre-wrap">{result.organicRemedies}</p>
-                        </div>
-                        <div>
-                            <h3 className="font-headline text-lg font-semibold flex items-center gap-2 mb-2">
-                                <TestTube className="h-5 w-5 text-primary" />
-                                {t('chemical_remedies_label')}
-                            </h3>
-                            <p className="text-foreground/90 whitespace-pre-wrap">{result.chemicalRemedies}</p>
-                        </div>
+                    <Card className="bg-card/50">
+                       <CardHeader>
+                          <CardTitle className="font-headline text-lg flex items-center gap-2">
+                            <Shield className="h-5 w-5 text-primary" />
+                            {t('preventive_measures_label')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-foreground/90 whitespace-pre-wrap">{result.preventiveMeasures}</p>
+                        </CardContent>
+                    </Card>
                   </div>
-
-                  <div className="rounded-lg border bg-card/50 p-4">
-                    <h3 className="font-headline text-lg font-semibold flex items-center gap-2 mb-2">
-                      <Shield className="h-5 w-5 text-primary" />
-                      {t('preventive_measures_label')}
-                    </h3>
-                    <p className="text-foreground/90 whitespace-pre-wrap">{result.preventiveMeasures}</p>
+                )}
+                {!isLoading && !result && (
+                  <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground pt-16">
+                    <Image src="https://placehold.co/600x400.png" alt={t('diagnosis_placeholder_alt')} data-ai-hint="agronomist plant" width={300} height={200} className="rounded-lg opacity-50"/>
+                    <p className="mt-4">{t('diagnosis_placeholder_text')}</p>
                   </div>
-                </div>
-              )}
-              {!isLoading && !result && (
-                <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
-                  <Image src="https://placehold.co/600x400.png" alt={t('diagnosis_placeholder_alt')} data-ai-hint="agronomist plant" width={300} height={200} className="rounded-lg opacity-50"/>
-                  <p className="mt-4">{t('diagnosis_placeholder_text')}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                )}
+            </div>
+          </div>
         </div>
       </main>
     </div>
