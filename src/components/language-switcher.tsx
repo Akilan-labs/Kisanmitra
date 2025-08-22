@@ -29,6 +29,7 @@ export function LanguageSwitcher({
           <SelectItem value="en">English</SelectItem>
           <SelectItem value="kn">ಕನ್ನಡ (Kannada)</SelectItem>
           <SelectItem value="hi">हिन्दी (Hindi)</SelectItem>
+          <SelectItem value="ta">தமிழ் (Tamil)</SelectItem>
         </SelectContent>
       </Select>
     </div>
