@@ -3,70 +3,70 @@
 @tailwind utilities;
 
 body {
-  font-family: 'PT Sans', sans-serif;
+  font-family: 'Geist Sans', sans-serif;
 }
 
 @layer base {
   :root {
-    --background: 74 20% 95%; /* Light Beige */
-    --foreground: 240 10% 3.9%;
-    --card: 74 20% 98%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 74 20% 98%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 80 61% 35%; /* Earthy Green */
-    --primary-foreground: 60 93% 98%;
-    --secondary: 74 15% 90%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 74 15% 90%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 45 62% 51%; /* Warm Gold */
-    --accent-foreground: 60 93% 98%;
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 220 90% 55%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220 8.9% 46.1%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220 8.9% 46.1%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 80 20% 80%;
-    --input: 80 20% 85%;
-    --ring: 80 61% 35%;
-    --radius: 0.5rem;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 220 90% 55%;
+    --radius: 0.75rem;
     --chart-1: hsl(var(--primary));
     --chart-2: hsl(var(--accent));
     --chart-3: 120 73% 75%;
     --chart-4: 200 87% 67%;
     --chart-5: 300 91% 65%;
      /* Custom Sidebar Vars */
-    --sidebar-background: hsl(var(--background));
+    --sidebar-background: 230 20% 98%;
     --sidebar-foreground: hsl(var(--foreground));
-    --sidebar-border: hsl(var(--border));
-    --sidebar-accent:  74, 20%, 90%;
+    --sidebar-border: 230 20% 92%;
+    --sidebar-accent:  220 14.3% 92.9%;
     --sidebar-accent-foreground: hsl(var(--foreground));
     --sidebar-ring: hsl(var(--ring));
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 80 61% 45%; /* Brighter Earthy Green */
-    --primary-foreground: 60 93% 98%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 45 72% 56%; /* Brighter Warm Gold */
-    --accent-foreground: 45 93% 98%;
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220 90% 55%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 80 61% 45%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 210 20% 98%;
      /* Custom Sidebar Vars */
-    --sidebar-background: 240, 10%, 7%;
+    --sidebar-background: 224 71.4% 6.1%;
     --sidebar-foreground: hsl(var(--foreground));
-    --sidebar-border: 240, 3.7%, 20%;
-    --sidebar-accent: 240, 3.7%, 18%;
+    --sidebar-border: 215 27.9% 12.9%;
+    --sidebar-accent: 215 27.9% 18.9%;
     --sidebar-accent-foreground: hsl(var(--foreground));
     --sidebar-ring: hsl(var(--ring));
   }
