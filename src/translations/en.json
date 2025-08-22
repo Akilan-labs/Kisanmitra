@@ -33,6 +33,7 @@
   "identified_crop_label": "Identified Crop",
   "disease_pest_label": "Disease/Pest",
   "severity_label": "Severity",
+  "current_stage_label": "Current Stage",
   "immediate_steps_label": "Immediate Steps",
   "disease_progression_label": "Disease Progression (If Untreated)",
   "suggested_remedies_label": "Suggested Remedies",

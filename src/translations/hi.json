@@ -33,6 +33,7 @@
   "identified_crop_label": "पहचानी गई फ़सल",
   "disease_pest_label": "रोग/कीट",
   "severity_label": "गंभीरता",
+  "current_stage_label": "वर्तमान चरण",
   "immediate_steps_label": "तत्काल कदम",
   "disease_progression_label": "रोग की प्रगति (यदि अनुपचारित छोड़ दिया जाए)",
   "suggested_remedies_label": "सुझाए गए उपचार",

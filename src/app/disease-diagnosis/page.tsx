@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, FileImage, Loader2, Sparkles, Siren, Pill, BarChart, Leaf, Shield, TestTube, TreeDeciduous, TrendingUp } from 'lucide-react';
+import { Camera, FileImage, Loader2, Sparkles, Siren, Pill, BarChart, Leaf, Shield, TestTube, TreeDeciduous, TrendingUp, Info } from 'lucide-react';
 
 import { diagnoseCropDiseaseAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -294,17 +294,7 @@ export default function DiseaseDiagnosisPage() {
                             <div className="text-2xl font-bold font-headline">{result.cropName}</div>
                           </CardContent>
                         </Card>
-                        <Card>
-                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">{t('severity_label')}</CardTitle>
-                            <BarChart className="h-4 w-4 text-muted-foreground" />
-                          </CardHeader>
-                          <CardContent>
-                            <Badge variant={result.severity.toLowerCase() === 'high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'} className="text-base">{result.severity}</Badge>
-                          </CardContent>
-                        </Card>
-                      </div>
-                       <Card>
+                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">{t('disease_pest_label')}</CardTitle>
                             <TestTube className="h-4 w-4 text-muted-foreground" />
@@ -313,6 +303,29 @@ export default function DiseaseDiagnosisPage() {
                             <div className="text-2xl font-bold font-headline">{result.disease}</div>
                           </CardContent>
                         </Card>
+                      </div>
+
+                       <Card>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{t('severity_label')}</CardTitle>
+                             <BarChart className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                            <Badge variant={result.severity.toLowerCase() === 'high' || result.severity.toLowerCase() === 'very high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'} className="text-base">{result.severity}</Badge>
+                          </CardContent>
+                        </Card>
+
+                     <Card>
+                        <CardHeader>
+                          <CardTitle className="font-headline text-lg flex items-center gap-2">
+                            <Info className="h-5 w-5 text-primary" />
+                            {t('current_stage_label')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-foreground/90 whitespace-pre-wrap">{result.currentStage}</p>
+                        </CardContent>
+                    </Card>
                     
                     <Alert variant="destructive">
                        <Siren className="h-4 w-4" />

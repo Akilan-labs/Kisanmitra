@@ -25,6 +25,7 @@ const DiagnoseCropDiseaseOutputSchema = z.object({
   cropName: z.string().describe('The name of the crop identified from the image.'),
   disease: z.string().describe('The name of the disease or pest.'),
   severity: z.string().describe('The severity of the disease (e.g., Low, Medium, High).'),
+  currentStage: z.string().describe('A detailed description of the current stage of the disease or pest infestation visible in the image.'),
   remedies: z.string().describe('General affordable remedies for the disease or pest.'),
   immediateSteps: z.string().describe('Immediate steps the farmer should take to save the crop.'),
   preventiveMeasures: z.string().describe('Detailed preventive measures to avoid this issue in the future.'),
@@ -49,13 +50,14 @@ Analyze the image provided and follow these steps:
 1.  **Identify the Crop:** First, identify the crop in the image.
 2.  **Identify the Disease/Pest:** Analyze the image for signs of disease or pest infestation. Identify the specific issue.
 3.  **Assess Severity:** Determine the severity of the problem (e.g., Low, Medium, High).
-4.  **Forecast Disease Progression:** Describe the likely stages and symptoms of the disease if it is left untreated over the next 1-3 weeks. This is critical.
-5.  **Provide Immediate Steps:** List the most critical actions the farmer should take right away to mitigate damage.
-6.  **Suggest Remedies:**
+4.  **Describe Current Stage:** Based on the visual evidence in the photo, describe the current observable stage of the disease (e.g., "Early stage with small yellow spots on lower leaves," "Advanced infestation with visible larvae and significant leaf damage").
+5.  **Forecast Disease Progression:** Describe the likely next stages and symptoms of the disease if it is left untreated over the next 1-3 weeks. This is critical.
+6.  **Provide Immediate Steps:** List the most critical actions the farmer should take right away to mitigate damage.
+7.  **Suggest Remedies:**
     *   Provide a section for **General Remedies**.
     *   Provide a dedicated section for **Organic Remedies**.
     *   Provide a dedicated section for **Chemical Remedies**. Ensure remedies are affordable and likely to be locally available.
-7.  **Outline Preventive Measures:** Detail the steps the farmer can take in the future to prevent a recurrence of this issue.
+8.  **Outline Preventive Measures:** Detail the steps the farmer can take in the future to prevent a recurrence of this issue.
 
 Respond in the specified language.
 
