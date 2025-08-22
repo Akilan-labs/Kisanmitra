@@ -1,4 +1,3 @@
-
 'use server';
 
 import { z } from 'zod';
@@ -87,6 +86,7 @@ export async function getMarketPriceAction(
 
 const findGovernmentSchemesSchema = z.object({
   query: z.string().min(3, 'Query must be at least 3 characters.'),
+  language: z.string(),
 });
 
 export async function findGovernmentSchemesAction(

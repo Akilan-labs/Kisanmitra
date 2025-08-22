@@ -94,6 +94,11 @@ export default function DiseaseDiagnosisPage() {
     }
   };
 
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    setResult(null);
+  };
+
   const handleCameraOpen = () => {
     setResult(null);
     setImagePreview(null);
@@ -178,7 +183,7 @@ export default function DiseaseDiagnosisPage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title="Crop Disease Diagnosis">
-        <LanguageSwitcher language={language} onLanguageChange={setLanguage} />
+        <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="grid gap-6 lg:grid-cols-2">

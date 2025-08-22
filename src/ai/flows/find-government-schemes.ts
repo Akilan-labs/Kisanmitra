@@ -13,6 +13,7 @@ import {z} from 'genkit';
 
 const FindGovernmentSchemesInputSchema = z.object({
   query: z.string().describe('The query to search for government schemes.'),
+  language: z.string().describe('The language for the response.'),
 });
 export type FindGovernmentSchemesInput = z.infer<typeof FindGovernmentSchemesInputSchema>;
 
@@ -44,6 +45,7 @@ const findGovernmentSchemesPrompt = ai.definePrompt({
   prompt: `You are an AI assistant helping farmers find relevant government schemes.
   Based on the farmer's query, search for relevant schemes and provide a simple explanation of eligibility, benefits, and the application process.
 
+  Respond in the specified language: {{{language}}}
   Query: {{{query}}}
   `,
 });

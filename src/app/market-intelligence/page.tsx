@@ -60,6 +60,11 @@ export default function MarketIntelligencePage() {
       mandi: '',
     },
   });
+  
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    setResult(null);
+  };
 
   const handleMicClick = async (field: FieldName) => {
     if (isRecording === field) {
@@ -141,7 +146,7 @@ export default function MarketIntelligencePage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title="Market Intelligence">
-        <LanguageSwitcher language={language} onLanguageChange={setLanguage} />
+        <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="grid gap-6 lg:grid-cols-2">

@@ -38,6 +38,12 @@ export default function GovernmentSchemesPage() {
     defaultValues: { query: '' },
   });
 
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    setResult(null);
+    setAudioUrl(null);
+  };
+
   const handleMicClick = async () => {
     if (isRecording) {
       mediaRecorderRef.current?.stop();
@@ -119,7 +125,7 @@ export default function GovernmentSchemesPage() {
     setResult(null);
     setAudioUrl(null);
     try {
-      const response = await findGovernmentSchemesAction(values);
+      const response = await findGovernmentSchemesAction({ ...values, language });
       if (response.success) {
         setResult(response.data);
       } else {
@@ -143,7 +149,7 @@ export default function GovernmentSchemesPage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title="Government Schemes">
-        <LanguageSwitcher language={language} onLanguageChange={setLanguage} />
+        <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="mx-auto max-w-3xl">

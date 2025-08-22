@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -59,6 +58,11 @@ export default function AIAssistantPage() {
       });
     }
   }, [messages]);
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    setMessages([]);
+  };
 
   const handleMicClick = async () => {
     if (isRecording) {
@@ -137,7 +141,7 @@ export default function AIAssistantPage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title="AI Assistant">
-        <LanguageSwitcher language={language} onLanguageChange={setLanguage} />
+        <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
       </PageHeader>
       <main className="flex flex-1 flex-col overflow-y-auto p-4 md:p-6">
         <div className="flex-1">
