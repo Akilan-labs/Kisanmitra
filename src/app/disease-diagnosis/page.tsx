@@ -11,9 +11,9 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -374,8 +374,9 @@ export default function DiseaseDiagnosisPage() {
                 )}
                 {!isLoading && !result && (
                   <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground pt-16">
-                    <Image src="https://placehold.co/600x400.png" alt={t('diagnosis_placeholder_alt')} data-ai-hint="agronomist plant" width={300} height={200} className="rounded-lg opacity-50"/>
-                    <p className="mt-4">{t('diagnosis_placeholder_text')}</p>
+                    <Sparkles className="h-12 w-12 text-muted-foreground/50" />
+                    <p className="mt-4 font-medium">{t('diagnosis_placeholder_text')}</p>
+                    <p className="text-sm text-muted-foreground">{t('diagnosis_result_description')}</p>
                   </div>
                 )}
             </div>
@@ -385,3 +386,5 @@ export default function DiseaseDiagnosisPage() {
     </div>
   );
 }
+
+    
