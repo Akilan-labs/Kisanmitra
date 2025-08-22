@@ -275,9 +275,6 @@ export default function DiseaseDiagnosisPage() {
           <div className="space-y-6">
              <CardHeader className="p-0">
                 <CardTitle>{t('diagnosis_result_title')}</CardTitle>
-                <CardDescription>
-                  {t('diagnosis_result_description')}
-                </CardDescription>
               </CardHeader>
               <div className="space-y-6">
                 {isLoading && (
@@ -376,7 +373,6 @@ export default function DiseaseDiagnosisPage() {
                   <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground pt-16">
                     <Sparkles className="h-12 w-12 text-muted-foreground/50" />
                     <p className="mt-4 font-medium">{t('diagnosis_placeholder_text')}</p>
-                    <p className="text-sm text-muted-foreground">{t('diagnosis_result_description')}</p>
                   </div>
                 )}
             </div>
@@ -386,5 +382,3 @@ export default function DiseaseDiagnosisPage() {
     </div>
   );
 }
-
-    
