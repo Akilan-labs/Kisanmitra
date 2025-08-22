@@ -288,31 +288,32 @@ export default function DiseaseDiagnosisPage() {
               )}
               {result && (
                 <div className="space-y-6">
-                  <div>
-                    <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
-                      <Leaf className="h-5 w-5 text-primary" />
-                      {t('identified_crop_label')}
-                    </h3>
-                    <p className="text-foreground/90">{result.cropName}</p>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="flex items-start gap-3 rounded-lg border border-border/50 p-4">
+                       <Leaf className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
+                       <div>
+                         <h3 className="font-semibold text-base text-muted-foreground">{t('identified_crop_label')}</h3>
+                         <p className="font-headline text-lg">{result.cropName}</p>
+                       </div>
+                     </div>
+                     <div className="flex items-start gap-3 rounded-lg border border-border/50 p-4">
+                       <BarChart className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
+                       <div>
+                         <h3 className="font-semibold text-base text-muted-foreground">{t('severity_label')}</h3>
+                         <Badge variant={result.severity.toLowerCase() === 'high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'} className="text-lg">{result.severity}</Badge>
+                       </div>
+                     </div>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg font-headline mb-1">{t('disease_pest_label')}</h3>
+                    <h3 className="font-headline text-lg font-semibold">{t('disease_pest_label')}</h3>
                     <p className="text-foreground/90">{result.disease}</p>
                   </div>
-                   <div>
-                    <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
-                      <BarChart className="h-5 w-5 text-primary" />
-                      {t('severity_label')}
-                    </h3>
-                    <Badge variant={result.severity.toLowerCase() === 'high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'}>{result.severity}</Badge>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
-                      <Siren className="h-5 w-5 text-destructive" />
-                      {t('immediate_steps_label')}
-                    </h3>
-                    <p className="text-foreground/90 whitespace-pre-wrap">{result.immediateSteps}</p>
-                  </div>
+                  
+                  <Alert variant="destructive">
+                     <Siren className="h-4 w-4" />
+                     <AlertTitle className="font-headline text-lg">{t('immediate_steps_label')}</AlertTitle>
+                     <AlertDescription className="whitespace-pre-wrap">{result.immediateSteps}</AlertDescription>
+                  </Alert>
 
                   <Tabs defaultValue="remedies" className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
@@ -321,21 +322,21 @@ export default function DiseaseDiagnosisPage() {
                       <TabsTrigger value="chemical">{t('chemical_tab')}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="remedies" className="mt-4 space-y-2">
-                       <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                       <h3 className="font-headline text-lg font-semibold flex items-center gap-2 mb-1">
                           <Pill className="h-5 w-5 text-primary" />
                           {t('suggested_remedies_label')}
                         </h3>
                        <p className="text-foreground/90 whitespace-pre-wrap">{result.remedies}</p>
                     </TabsContent>
                     <TabsContent value="organic" className="mt-4">
-                       <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                       <h3 className="font-headline text-lg font-semibold flex items-center gap-2 mb-1">
                           <TreeDeciduous className="h-5 w-5 text-primary" />
                           {t('organic_remedies_label')}
                         </h3>
                        <p className="text-foreground/90 whitespace-pre-wrap">{result.organicRemedies}</p>
                     </TabsContent>
                      <TabsContent value="chemical" className="mt-4">
-                       <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                       <h3 className="font-headline text-lg font-semibold flex items-center gap-2 mb-1">
                           <TestTube className="h-5 w-5 text-primary" />
                           {t('chemical_remedies_label')}
                         </h3>
@@ -343,8 +344,8 @@ export default function DiseaseDiagnosisPage() {
                     </TabsContent>
                   </Tabs>
 
-                  <div>
-                    <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
+                  <div className="rounded-lg border border-border/50 p-4">
+                    <h3 className="font-headline text-lg font-semibold flex items-center gap-2 mb-2">
                       <Shield className="h-5 w-5 text-primary" />
                       {t('preventive_measures_label')}
                     </h3>
