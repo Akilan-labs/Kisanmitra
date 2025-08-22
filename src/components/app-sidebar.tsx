@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -14,17 +13,23 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { Icons } from '@/components/icons';
+import { useTranslation } from '@/hooks/use-translation';
+import { useState } from 'react';
 
-const links = [
-  { href: '/disease-diagnosis', label: 'Crop Disease', icon: Leaf },
-  { href: '/market-intelligence', label: 'Market Prices', icon: LineChart },
-  { href: '/government-schemes', label: 'Govt. Schemes', icon: ScrollText },
-  { href: '/yield-prediction', label: 'Yield Prediction', icon: Warehouse },
-  { href: '/ai-assistant', label: 'AI Assistant', icon: Bot },
-];
 
 export function AppSidebar() {
   const pathname = usePathname();
+  // We don't have access to language from URL params, so we'll default to 'en' for the sidebar.
+  // A more robust solution would involve a global state manager or context for language.
+  const { t } = useTranslation('en');
+
+  const links = [
+    { href: '/disease-diagnosis', label: t('sidebar_crop_disease'), icon: Leaf },
+    { href: '/market-intelligence', label: t('sidebar_market_prices'), icon: LineChart },
+    { href: '/government-schemes', label: t('sidebar_govt_schemes'), icon: ScrollText },
+    { href: '/yield-prediction', label: t('sidebar_yield_prediction'), icon: Warehouse },
+    { href: '/ai-assistant', label: t('sidebar_ai_assistant'), icon: Bot },
+  ];
 
   return (
     <Sidebar>

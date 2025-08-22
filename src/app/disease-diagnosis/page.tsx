@@ -23,6 +23,7 @@ import type { DiagnoseCropDiseaseOutput } from '@/ai/flows/diagnose-crop-disease
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTranslation } from '@/hooks/use-translation';
 
 
 const fileToDataUri = (file: File): Promise<string> => {
@@ -43,6 +44,7 @@ export default function DiseaseDiagnosisPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<DiagnoseCropDiseaseOutput | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation(language);
 
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -56,10 +58,8 @@ export default function DiseaseDiagnosisPage() {
         return;
       }
       try {
-        // This won't actually start the stream, just checks for permission
         const stream = await navigator.mediaDevices.getUserMedia({video: true});
         setHasCameraPermission(true);
-        // Stop the tracks immediately after checking permission to not leave the camera on.
         stream.getTracks().forEach(track => track.stop());
       } catch (error) {
         console.error('Error accessing camera:', error);
@@ -78,8 +78,8 @@ export default function DiseaseDiagnosisPage() {
       } catch (err) {
         toast({
           variant: 'destructive',
-          title: 'Could not start camera',
-          description: 'Please ensure camera permissions are enabled.',
+          title: t('camera_error_title'),
+          description: t('camera_error_description'),
         });
       }
     }
@@ -147,8 +147,8 @@ export default function DiseaseDiagnosisPage() {
     event.preventDefault();
     if (!imageFile) {
       toast({
-        title: 'No Image Selected',
-        description: 'Please select an image of the crop to diagnose.',
+        title: t('no_image_title'),
+        description: t('no_image_description'),
         variant: 'destructive',
       });
       return;
@@ -164,15 +164,15 @@ export default function DiseaseDiagnosisPage() {
         setResult(response.data);
       } else {
         toast({
-          title: 'Diagnosis Failed',
+          title: t('diagnosis_failed_title'),
           description: response.error,
           variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'An unexpected error occurred.',
+        title: t('error'),
+        description: t('unexpected_error'),
         variant: 'destructive',
       });
     } finally {
@@ -182,7 +182,7 @@ export default function DiseaseDiagnosisPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <PageHeader title="Crop Disease Diagnosis">
+      <PageHeader title={t('crop_disease_diagnosis_title')}>
         <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
@@ -190,15 +190,15 @@ export default function DiseaseDiagnosisPage() {
           <Card>
             <form onSubmit={handleSubmit}>
               <CardHeader>
-                <CardTitle>Upload Crop Image</CardTitle>
+                <CardTitle>{t('upload_crop_image_title')}</CardTitle>
                 <CardDescription>
-                  Take a picture or upload an image of the affected plant.
+                  {t('upload_crop_image_description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <Label htmlFor="crop-image" className="sr-only">
-                    Crop Image
+                    {t('crop_image_label')}
                   </Label>
                   <Input
                     id="crop-image"
@@ -215,7 +215,7 @@ export default function DiseaseDiagnosisPage() {
                     ) : imagePreview ? (
                       <Image
                         src={imagePreview}
-                        alt="Crop preview"
+                        alt={t('crop_preview_alt')}
                         width={600}
                         height={400}
                         className="h-full w-full object-contain"
@@ -223,8 +223,8 @@ export default function DiseaseDiagnosisPage() {
                     ) : (
                       <div className="text-center text-muted-foreground p-4 cursor-pointer" onClick={() => document.getElementById('crop-image')?.click()}>
                         <FileImage className="mx-auto h-12 w-12" />
-                        <p className="mt-2">Click or tap to upload an image</p>
-                        <p className="text-xs">PNG, JPG, WEBP supported</p>
+                        <p className="mt-2">{t('upload_image_prompt')}</p>
+                        <p className="text-xs">{t('upload_image_types')}</p>
                       </div>
                     )}
                   </div>
@@ -232,29 +232,29 @@ export default function DiseaseDiagnosisPage() {
                     {isCameraOpen ? (
                       <>
                         <Button type="button" onClick={handleCapture} className="w-full">
-                          <Camera className="mr-2 h-4 w-4" /> Capture Photo
+                          <Camera className="mr-2 h-4 w-4" /> {t('capture_photo_button')}
                         </Button>
                         <Button type="button" variant="outline" onClick={stopVideoStream} className="w-full">
-                           Cancel
+                           {t('cancel_button')}
                         </Button>
                       </>
                     ) : (
                       <>
                         <Button type="button" variant="outline" className="w-full" onClick={() => document.getElementById('crop-image')?.click()}>
                           <FileImage className="mr-2 h-4 w-4" />
-                          {imagePreview ? 'Change Image' : 'Upload Image'}
+                          {imagePreview ? t('change_image_button') : t('upload_image_button')}
                         </Button>
                         <Button type="button" className="w-full" onClick={handleCameraOpen} disabled={!hasCameraPermission}>
                           <Camera className="mr-2 h-4 w-4" />
-                          Use Camera
+                          {t('use_camera_button')}
                         </Button>
                       </>
                     )}
                    </div>
                    {hasCameraPermission === false && (
                     <Alert variant="destructive">
-                      <AlertTitle>Camera Access Denied</AlertTitle>
-                      <AlertDescription>Please enable camera permissions in your browser settings to use this feature.</AlertDescription>
+                      <AlertTitle>{t('camera_permission_denied_title')}</AlertTitle>
+                      <AlertDescription>{t('camera_permission_denied_description')}</AlertDescription>
                     </Alert>
                    )}
                 </div>
@@ -266,16 +266,16 @@ export default function DiseaseDiagnosisPage() {
                   ) : (
                     <Sparkles className="mr-2 h-4 w-4" />
                   )}
-                  {isLoading ? 'Diagnosing...' : 'Diagnose Disease'}
+                  {isLoading ? t('diagnosing_button') : t('diagnose_disease_button')}
                 </Button>
               </CardFooter>
             </form>
           </Card>
           <Card className="flex flex-col">
             <CardHeader>
-              <CardTitle>Diagnosis Result</CardTitle>
+              <CardTitle>{t('diagnosis_result_title')}</CardTitle>
               <CardDescription>
-                AI-powered analysis and suggested remedies.
+                {t('diagnosis_result_description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto">
@@ -289,53 +289,53 @@ export default function DiseaseDiagnosisPage() {
                   <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
                       <Leaf className="h-5 w-5 text-primary" />
-                      Identified Crop
+                      {t('identified_crop_label')}
                     </h3>
                     <p className="text-foreground/90">{result.cropName}</p>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg font-headline mb-1">Disease/Pest</h3>
+                    <h3 className="font-semibold text-lg font-headline mb-1">{t('disease_pest_label')}</h3>
                     <p className="text-foreground/90">{result.disease}</p>
                   </div>
                    <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
                       <BarChart className="h-5 w-5 text-primary" />
-                      Severity
+                      {t('severity_label')}
                     </h3>
                     <Badge variant={result.severity.toLowerCase() === 'high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'}>{result.severity}</Badge>
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
                       <Siren className="h-5 w-5 text-destructive" />
-                      Immediate Steps
+                      {t('immediate_steps_label')}
                     </h3>
                     <p className="text-foreground/90 whitespace-pre-wrap">{result.immediateSteps}</p>
                   </div>
 
                   <Tabs defaultValue="remedies" className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="remedies">General</TabsTrigger>
-                      <TabsTrigger value="organic">Organic</TabsTrigger>
-                      <TabsTrigger value="chemical">Chemical</TabsTrigger>
+                      <TabsTrigger value="remedies">{t('general_tab')}</TabsTrigger>
+                      <TabsTrigger value="organic">{t('organic_tab')}</TabsTrigger>
+                      <TabsTrigger value="chemical">{t('chemical_tab')}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="remedies" className="mt-4 space-y-2">
                        <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
                           <Pill className="h-5 w-5 text-primary" />
-                          Suggested Remedies
+                          {t('suggested_remedies_label')}
                         </h3>
                        <p className="text-foreground/90 whitespace-pre-wrap">{result.remedies}</p>
                     </TabsContent>
                     <TabsContent value="organic" className="mt-4">
                        <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
                           <TreeDeciduous className="h-5 w-5 text-primary" />
-                          Organic Remedies
+                          {t('organic_remedies_label')}
                         </h3>
                        <p className="text-foreground/90 whitespace-pre-wrap">{result.organicRemedies}</p>
                     </TabsContent>
                      <TabsContent value="chemical" className="mt-4">
                        <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
                           <TestTube className="h-5 w-5 text-primary" />
-                          Chemical Remedies
+                          {t('chemical_remedies_label')}
                         </h3>
                        <p className="text-foreground/90 whitespace-pre-wrap">{result.chemicalRemedies}</p>
                     </TabsContent>
@@ -344,7 +344,7 @@ export default function DiseaseDiagnosisPage() {
                   <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2 mb-1">
                       <Shield className="h-5 w-5 text-primary" />
-                      Preventive Measures
+                      {t('preventive_measures_label')}
                     </h3>
                     <p className="text-foreground/90 whitespace-pre-wrap">{result.preventiveMeasures}</p>
                   </div>
@@ -352,8 +352,8 @@ export default function DiseaseDiagnosisPage() {
               )}
               {!isLoading && !result && (
                 <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
-                  <Image src="https://placehold.co/600x400.png" alt="Doctor examining a plant" data-ai-hint="agronomist plant" width={300} height={200} className="rounded-lg opacity-50"/>
-                  <p className="mt-4">Your diagnosis results will appear here.</p>
+                  <Image src="https://placehold.co/600x400.png" alt={t('diagnosis_placeholder_alt')} data-ai-hint="agronomist plant" width={300} height={200} className="rounded-lg opacity-50"/>
+                  <p className="mt-4">{t('diagnosis_placeholder_text')}</p>
                 </div>
               )}
             </CardContent>

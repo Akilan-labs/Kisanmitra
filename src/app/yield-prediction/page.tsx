@@ -39,6 +39,7 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import type { PredictYieldOutput } from '@/ai/flows/predict-yield';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/hooks/use-translation';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
@@ -68,6 +69,7 @@ export default function YieldPredictionPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation(language);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -107,8 +109,8 @@ export default function YieldPredictionPage() {
         photoDataUri = await fileToDataUri(imageFile);
       } catch (error) {
         toast({
-          title: 'Image Error',
-          description: 'Could not process the image file.',
+          title: t('image_error_title'),
+          description: t('image_error_description'),
           variant: 'destructive',
         });
         setIsLoading(false);
@@ -122,15 +124,15 @@ export default function YieldPredictionPage() {
         setResult(response.data);
       } else {
         toast({
-          title: 'Prediction Failed',
+          title: t('prediction_failed_title'),
           description: response.error,
           variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'An unexpected error occurred.',
+        title: t('error'),
+        description: t('unexpected_error'),
         variant: 'destructive',
       });
     } finally {
@@ -140,7 +142,7 @@ export default function YieldPredictionPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <PageHeader title="Yield Prediction">
+      <PageHeader title={t('yield_prediction_title')}>
         <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
@@ -149,14 +151,14 @@ export default function YieldPredictionPage() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <CardHeader>
-                  <CardTitle>Enter Crop Details</CardTitle>
+                  <CardTitle>{t('enter_crop_details_title')}</CardTitle>
                   <CardDescription>
-                    Provide the following details to get a yield prediction.
+                    {t('enter_crop_details_description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 mb-4">
-                    <Label htmlFor="crop-image">Crop Field Image (Optional)</Label>
+                    <Label htmlFor="crop-image">{t('crop_field_image_label')}</Label>
                     <Input
                       id="crop-image"
                       type="file"
@@ -168,7 +170,7 @@ export default function YieldPredictionPage() {
                       {imagePreview ? (
                         <Image
                           src={imagePreview}
-                          alt="Crop field preview"
+                          alt={t('crop_field_preview_alt')}
                           width={600}
                           height={400}
                           className="h-full w-full object-contain rounded-lg"
@@ -176,8 +178,8 @@ export default function YieldPredictionPage() {
                       ) : (
                         <div className="text-center text-muted-foreground">
                           <FileImage className="mx-auto h-12 w-12" />
-                          <p className="mt-2">Click or tap to upload an image</p>
-                          <p className="text-xs">Image of the entire field helps accuracy</p>
+                          <p className="mt-2">{t('upload_image_prompt')}</p>
+                          <p className="text-xs">{t('field_image_accuracy_note')}</p>
                         </div>
                       )}
                     </div>
@@ -189,9 +191,9 @@ export default function YieldPredictionPage() {
                       name="crop"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Crop Name</FormLabel>
+                          <FormLabel>{t('crop_name_label')}</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., Rice, Wheat" {...field} />
+                            <Input placeholder={t('crop_name_placeholder_yield')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -202,9 +204,9 @@ export default function YieldPredictionPage() {
                       name="area"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Area (in acres)</FormLabel>
+                          <FormLabel>{t('area_label')}</FormLabel>
                           <FormControl>
-                            <Input type="number" placeholder="e.g., 5" {...field} />
+                            <Input type="number" placeholder={t('area_placeholder')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -215,11 +217,11 @@ export default function YieldPredictionPage() {
                       name="soilType"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Soil Type</FormLabel>
+                          <FormLabel>{t('soil_type_label')}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select a soil type" />
+                                <SelectValue placeholder={t('soil_type_placeholder')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -239,9 +241,9 @@ export default function YieldPredictionPage() {
                       name="rainfall"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Annual Rainfall (mm)</FormLabel>
+                          <FormLabel>{t('annual_rainfall_label')}</FormLabel>
                           <FormControl>
-                            <Input type="number" placeholder="e.g., 1200" {...field} />
+                            <Input type="number" placeholder={t('annual_rainfall_placeholder')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -252,9 +254,9 @@ export default function YieldPredictionPage() {
                       name="region"
                       render={({ field }) => (
                         <FormItem className="sm:col-span-2">
-                          <FormLabel>Region/State</FormLabel>
+                          <FormLabel>{t('region_label')}</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., Punjab, Karnataka" {...field} />
+                            <Input placeholder={t('region_placeholder')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -269,7 +271,7 @@ export default function YieldPredictionPage() {
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    {isLoading ? 'Predicting...' : 'Predict Yield'}
+                    {isLoading ? t('predicting_button') : t('predict_yield_button')}
                   </Button>
                 </CardFooter>
               </form>
@@ -277,8 +279,8 @@ export default function YieldPredictionPage() {
           </Card>
           <Card className="flex flex-col">
             <CardHeader>
-              <CardTitle>Prediction Result</CardTitle>
-              <CardDescription>AI-powered yield forecast and recommendations.</CardDescription>
+              <CardTitle>{t('prediction_result_title')}</CardTitle>
+              <CardDescription>{t('prediction_result_description')}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
               {isLoading && (
@@ -291,14 +293,14 @@ export default function YieldPredictionPage() {
                   <div>
                     <h3 className="font-headline mb-1 flex items-center gap-2 text-lg font-semibold">
                       <Warehouse className="h-5 w-5" />
-                      Predicted Yield
+                      {t('predicted_yield_label')}
                     </h3>
                     <p className="text-2xl font-bold text-primary">{result.predictedYield}</p>
                   </div>
                   <div>
                     <h3 className="font-headline mb-1 flex items-center gap-2 text-lg font-semibold">
                       <BarChart className="h-5 w-5" />
-                      Confidence
+                      {t('confidence_label')}
                     </h3>
                     <Badge
                       variant={
@@ -315,7 +317,7 @@ export default function YieldPredictionPage() {
                   <div>
                     <h3 className="font-headline mb-1 flex items-center gap-2 text-lg font-semibold">
                       <Info className="h-5 w-5" />
-                      Recommendations
+                      {t('recommendations_label')}
                     </h3>
                     <p className="whitespace-pre-wrap text-foreground/90">{result.recommendations}</p>
                   </div>
@@ -325,13 +327,13 @@ export default function YieldPredictionPage() {
                 <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
                   <Image
                     src="https://placehold.co/600x400.png"
-                    alt="Lush green field"
+                    alt={t('yield_placeholder_alt')}
                     data-ai-hint="field crops"
                     width={300}
                     height={200}
                     className="rounded-lg opacity-50"
                   />
-                  <p className="mt-4">Your yield prediction will appear here.</p>
+                  <p className="mt-4">{t('yield_placeholder_text')}</p>
                 </div>
               )}
             </CardContent>

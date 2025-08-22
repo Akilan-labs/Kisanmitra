@@ -4,26 +4,25 @@ import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Mic, Send, Sparkles, User, Bot } from 'lucide-react';
+import { Loader2, Mic, Send, Bot, User } from 'lucide-react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
   askAIAction,
   speechToTextAction,
-  textToSpeechAction,
 } from '@/app/actions';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/page-header';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslation } from '@/hooks/use-translation';
 
 type Message = {
   id: string;
@@ -41,6 +40,7 @@ export default function AIAssistantPage() {
   const [language, setLanguage] = useState('en');
   const [isRecording, setIsRecording] = useState(false);
   
+  const { t } = useTranslation(language);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -94,10 +94,10 @@ export default function AIAssistantPage() {
             if (response.success) {
               form.setValue('query', response.data.text, { shouldValidate: true });
             } else {
-              toast({ title: 'Transcription Failed', description: response.error, variant: 'destructive' });
+              toast({ title: t('transcription_failed_title'), description: response.error, variant: 'destructive' });
             }
           } catch (error) {
-            toast({ title: 'Error', description: 'Failed to process audio.', variant: 'destructive' });
+            toast({ title: t('error'), description: t('audio_processing_error'), variant: 'destructive' });
           }
         };
         stream.getTracks().forEach((track) => track.stop());
@@ -107,8 +107,8 @@ export default function AIAssistantPage() {
       setIsRecording(true);
     } catch (error) {
       toast({
-        title: 'Microphone Access Denied',
-        description: 'Please enable microphone permissions in your browser settings.',
+        title: t('mic_denied_title'),
+        description: t('mic_denied_description'),
         variant: 'destructive',
       });
     }
@@ -127,11 +127,11 @@ export default function AIAssistantPage() {
         const assistantMessage: Message = { id: uuidv4(), role: 'assistant', text: response.data.answer };
         setMessages((prev) => [...prev, assistantMessage]);
       } else {
-        const errorMessage: Message = { id: uuidv4(), role: 'assistant', text: `Sorry, something went wrong: ${response.error}` };
+        const errorMessage: Message = { id: uuidv4(), role: 'assistant', text: `${t('error_prefix')}: ${response.error}` };
         setMessages((prev) => [...prev, errorMessage]);
       }
     } catch (error) {
-       const errorMessage: Message = { id: uuidv4(), role: 'assistant', text: 'An unexpected error occurred. Please try again.' };
+       const errorMessage: Message = { id: uuidv4(), role: 'assistant', text: t('unexpected_error_short') };
        setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -140,7 +140,7 @@ export default function AIAssistantPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <PageHeader title="AI Assistant">
+      <PageHeader title={t('ai_assistant_title')}>
         <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
       </PageHeader>
       <main className="flex flex-1 flex-col overflow-y-auto p-4 md:p-6">
@@ -149,9 +149,9 @@ export default function AIAssistantPage() {
              <div className="space-y-6 pr-4">
               {messages.length === 0 && (
                  <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
-                    <Image src="https://placehold.co/600x400.png" alt="AI Assistant" data-ai-hint="friendly robot" width={300} height={200} className="rounded-lg opacity-50"/>
-                    <h2 className="mt-4 text-2xl font-bold font-headline">KisanMitra AI Assistant</h2>
-                    <p className="mt-2">Ask me anything about farming!</p>
+                    <Image src="https://placehold.co/600x400.png" alt={t('ai_assistant_placeholder_alt')} data-ai-hint="friendly robot" width={300} height={200} className="rounded-lg opacity-50"/>
+                    <h2 className="mt-4 text-2xl font-bold font-headline">{t('ai_assistant_welcome_title')}</h2>
+                    <p className="mt-2">{t('ai_assistant_welcome_message')}</p>
                  </div>
               )}
               {messages.map((message) => (
@@ -192,10 +192,10 @@ export default function AIAssistantPage() {
                   name="query"
                   render={({ field }) => (
                     <FormItem className="flex-1">
-                      <FormLabel className="sr-only">Your Message</FormLabel>
+                      <FormLabel className="sr-only">{t('your_message_label')}</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Ask about crop rotation, pest control, or anything else..."
+                          placeholder={t('ai_assistant_input_placeholder')}
                           className="resize-none"
                           rows={1}
                           {...field}
@@ -222,11 +222,4 @@ export default function AIAssistantPage() {
       </main>
     </div>
   );
-}
-
-// Simple UUID generator for unique message IDs
-declare global {
-  interface Crypto {
-    randomUUID: () => string;
-  }
 }

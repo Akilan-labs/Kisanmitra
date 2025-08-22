@@ -30,6 +30,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart';
+import { useTranslation } from '@/hooks/use-translation';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
@@ -52,6 +53,7 @@ export default function MarketIntelligencePage() {
   const [isRecording, setIsRecording] = useState<FieldName | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation(language);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -97,10 +99,10 @@ export default function MarketIntelligencePage() {
             if (response.success) {
               form.setValue(field, response.data.text, { shouldValidate: true });
             } else {
-              toast({ title: 'Transcription Failed', description: response.error, variant: 'destructive' });
+              toast({ title: t('transcription_failed_title'), description: response.error, variant: 'destructive' });
             }
           } catch (error) {
-            toast({ title: 'Error', description: 'Failed to process audio.', variant: 'destructive' });
+            toast({ title: t('error'), description: t('audio_processing_error'), variant: 'destructive' });
           }
         };
         stream.getTracks().forEach((track) => track.stop());
@@ -110,8 +112,8 @@ export default function MarketIntelligencePage() {
       setIsRecording(field);
     } catch (error) {
       toast({
-        title: 'Microphone Access Denied',
-        description: 'Please enable microphone permissions in your browser settings.',
+        title: t('mic_denied_title'),
+        description: t('mic_denied_description'),
         variant: 'destructive',
       });
     }
@@ -127,15 +129,15 @@ export default function MarketIntelligencePage() {
         setResult(response.data);
       } else {
         toast({
-          title: 'Analysis Failed',
+          title: t('analysis_failed_title'),
           description: response.error,
           variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'An unexpected error occurred.',
+        title: t('error'),
+        description: t('unexpected_error'),
         variant: 'destructive',
       });
     } finally {
@@ -145,7 +147,7 @@ export default function MarketIntelligencePage() {
 
   return (
     <div className="flex h-full flex-col">
-      <PageHeader title="Market Intelligence">
+      <PageHeader title={t('market_intelligence_title')}>
         <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
@@ -154,9 +156,9 @@ export default function MarketIntelligencePage() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <CardHeader>
-                  <CardTitle>Check Market Prices</CardTitle>
+                  <CardTitle>{t('check_market_prices_title')}</CardTitle>
                   <CardDescription>
-                    Enter a crop and mandi to get real-time price analysis.
+                    {t('check_market_prices_description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -165,10 +167,10 @@ export default function MarketIntelligencePage() {
                     name="crop"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Crop Name</FormLabel>
+                        <FormLabel>{t('crop_name_label')}</FormLabel>
                         <FormControl>
                            <div className="relative">
-                            <Input placeholder="e.g., Tomato, Wheat" {...field} className="pr-10"/>
+                            <Input placeholder={t('crop_name_placeholder')} {...field} className="pr-10"/>
                             <Button size="icon" variant={isRecording === 'crop' ? 'destructive' : 'ghost'} type="button" onClick={() => handleMicClick('crop')} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-transparent">
                                <Mic className="h-4 w-4" />
                             </Button>
@@ -183,10 +185,10 @@ export default function MarketIntelligencePage() {
                     name="mandi"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Mandi Name</FormLabel>
+                        <FormLabel>{t('mandi_name_label')}</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input placeholder="e.g., Yeshwanthpur, Azadpur" {...field} className="pr-10" />
+                            <Input placeholder={t('mandi_name_placeholder')} {...field} className="pr-10" />
                              <Button size="icon" variant={isRecording === 'mandi' ? 'destructive' : 'ghost'} type="button" onClick={() => handleMicClick('mandi')} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-transparent">
                                <Mic className="h-4 w-4" />
                             </Button>
@@ -204,7 +206,7 @@ export default function MarketIntelligencePage() {
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    {isLoading ? 'Analyzing...' : isRecording ? 'Recording...' : 'Get Prices'}
+                    {isLoading ? t('analyzing_button') : isRecording ? t('recording_button') : t('get_prices_button')}
                   </Button>
                 </CardFooter>
               </form>
@@ -212,9 +214,9 @@ export default function MarketIntelligencePage() {
           </Card>
            <Card className="flex flex-col">
             <CardHeader>
-              <CardTitle>Market Analysis</CardTitle>
+              <CardTitle>{t('market_analysis_title')}</CardTitle>
               <CardDescription>
-                AI-powered price and trend information.
+                {t('market_analysis_description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
@@ -226,7 +228,7 @@ export default function MarketIntelligencePage() {
               {result && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-lg font-headline">Current Price</h3>
+                    <h3 className="font-semibold text-lg font-headline">{t('current_price_label')}</h3>
                     <p className="text-2xl font-bold text-primary">
                       {new Intl.NumberFormat('en-IN', {
                         style: 'currency',
@@ -237,7 +239,7 @@ export default function MarketIntelligencePage() {
 
                   {result.priceHistory && result.priceHistory.length > 0 && (
                      <div className="space-y-2">
-                        <h3 className="font-semibold text-lg font-headline">Price Trend (Last 7 Days)</h3>
+                        <h3 className="font-semibold text-lg font-headline">{t('price_trend_label')}</h3>
                         <ChartContainer config={chartConfig} className="h-[200px] w-full">
                           <LineChart accessibilityLayer data={result.priceHistory} margin={{ top: 20, left: -20, right: 20 }}>
                             <CartesianGrid vertical={false} />
@@ -273,7 +275,7 @@ export default function MarketIntelligencePage() {
                   <div>
                     <h3 className="font-semibold text-lg font-headline flex items-center gap-2">
                         <TrendingUp className="h-5 w-5"/>
-                        Trend Analysis
+                        {t('trend_analysis_label')}
                     </h3>
                     <p className="text-foreground/90 whitespace-pre-wrap">{result.trendAnalysis}</p>
                   </div>
@@ -281,8 +283,8 @@ export default function MarketIntelligencePage() {
               )}
               {!isLoading && !result && (
                 <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
-                   <Image src="https://placehold.co/600x400.png" alt="Market stall with fresh produce" data-ai-hint="market produce" width={300} height={200} className="rounded-lg opacity-50"/>
-                  <p className="mt-4">Your market analysis will appear here.</p>
+                   <Image src="https://placehold.co/600x400.png" alt={t('market_placeholder_alt')} data-ai-hint="market produce" width={300} height={200} className="rounded-lg opacity-50"/>
+                  <p className="mt-4">{t('market_placeholder_text')}</p>
                 </div>
               )}
             </CardContent>

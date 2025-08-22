@@ -17,6 +17,7 @@ import { PageHeader } from '@/components/page-header';
 import type { FindGovernmentSchemesOutput } from '@/ai/flows/find-government-schemes';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { useTranslation } from '@/hooks/use-translation';
 
 const formSchema = z.object({
   query: z.string().min(3, 'Please enter at least 3 characters.'),
@@ -29,7 +30,8 @@ export default function GovernmentSchemesPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
-
+  
+  const { t } = useTranslation(language);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const { toast } = useToast();
 
@@ -74,10 +76,10 @@ export default function GovernmentSchemesPage() {
             if (response.success) {
               form.setValue('query', response.data.text, { shouldValidate: true });
             } else {
-              toast({ title: 'Transcription Failed', description: response.error, variant: 'destructive' });
+              toast({ title: t('transcription_failed_title'), description: response.error, variant: 'destructive' });
             }
           } catch (error) {
-            toast({ title: 'Error', description: 'Failed to process audio.', variant: 'destructive' });
+            toast({ title: t('error'), description: t('audio_processing_error'), variant: 'destructive' });
           }
         };
         stream.getTracks().forEach((track) => track.stop());
@@ -87,8 +89,8 @@ export default function GovernmentSchemesPage() {
       setIsRecording(true);
     } catch (error) {
       toast({
-        title: 'Microphone Access Denied',
-        description: 'Please enable microphone permissions in your browser settings.',
+        title: t('mic_denied_title'),
+        description: t('mic_denied_description'),
         variant: 'destructive',
       });
     }
@@ -102,7 +104,7 @@ export default function GovernmentSchemesPage() {
     const textToSpeak = result.schemes
       .map(
         (scheme) =>
-          `${scheme.title}. Eligibility: ${scheme.eligibility}. Benefits: ${scheme.benefits}. Application Process: ${scheme.applicationProcess}`
+          `${scheme.title}. ${t('eligibility_label')}: ${scheme.eligibility}. ${t('benefits_label')}: ${scheme.benefits}. ${t('application_process_label')}: ${scheme.applicationProcess}`
       )
       .join('\n\n');
     
@@ -111,10 +113,10 @@ export default function GovernmentSchemesPage() {
       if (response.success) {
         setAudioUrl(response.data.audio);
       } else {
-        toast({ title: 'Audio Generation Failed', description: response.error, variant: 'destructive' });
+        toast({ title: t('audio_generation_failed_title'), description: response.error, variant: 'destructive' });
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Could not generate audio.', variant: 'destructive' });
+      toast({ title: t('error'), description: t('audio_generation_error'), variant: 'destructive' });
     } finally {
       setIsAudioLoading(false);
     }
@@ -130,15 +132,15 @@ export default function GovernmentSchemesPage() {
         setResult(response.data);
       } else {
         toast({
-          title: 'Search Failed',
+          title: t('search_failed_title'),
           description: response.error,
           variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'An unexpected error occurred.',
+        title: t('error'),
+        description: t('unexpected_error'),
         variant: 'destructive',
       });
     } finally {
@@ -148,16 +150,16 @@ export default function GovernmentSchemesPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <PageHeader title="Government Schemes">
+      <PageHeader title={t('government_schemes_title')}>
         <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="mx-auto max-w-3xl">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Find Government Schemes</CardTitle>
+              <CardTitle>{t('find_government_schemes_title')}</CardTitle>
               <CardDescription>
-                Ask about subsidies, loans, or any other government support you need.
+                {t('find_government_schemes_description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -168,11 +170,11 @@ export default function GovernmentSchemesPage() {
                     name="query"
                     render={({ field }) => (
                       <FormItem className="flex-1">
-                        <FormLabel className="sr-only">Query</FormLabel>
+                        <FormLabel className="sr-only">{t('query_label')}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                            <Input placeholder="e.g., 'subsidy for drip irrigation', 'kisan credit card'" className="pl-10 pr-10" {...field} />
+                            <Input placeholder={t('schemes_search_placeholder')} className="pl-10 pr-10" {...field} />
                             <Button size="icon" variant={isRecording ? 'destructive' : 'ghost'} type="button" onClick={handleMicClick} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-transparent">
                                <Mic className="h-4 w-4" />
                             </Button>
@@ -188,7 +190,7 @@ export default function GovernmentSchemesPage() {
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    {isLoading ? 'Searching...' : 'Search'}
+                    {isLoading ? t('searching_button') : t('search_button')}
                   </Button>
                 </form>
               </Form>
@@ -206,11 +208,11 @@ export default function GovernmentSchemesPage() {
                 <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
                   <Button onClick={handlePlayAudio} disabled={isAudioLoading} variant="outline">
                     {isAudioLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Volume2 className="mr-2 h-4 w-4" />}
-                    {isAudioLoading ? 'Generating Audio...' : 'Read Aloud'}
+                    {isAudioLoading ? t('generating_audio_button') : t('read_aloud_button')}
                   </Button>
                   {audioUrl && (
                     <audio controls autoPlay src={audioUrl} className="w-full max-w-sm">
-                      Your browser does not support the audio element.
+                      {t('audio_not_supported')}
                     </audio>
                   )}
                 </div>
@@ -220,20 +222,20 @@ export default function GovernmentSchemesPage() {
                           <AccordionTrigger className="font-headline text-lg hover:no-underline">{scheme.title}</AccordionTrigger>
                           <AccordionContent className="space-y-4 pt-2">
                             <div>
-                                  <h4 className="font-semibold text-base">Eligibility</h4>
+                                  <h4 className="font-semibold text-base">{t('eligibility_label')}</h4>
                                   <p className="text-sm text-muted-foreground">{scheme.eligibility}</p>
                             </div>
                               <div>
-                                  <h4 className="font-semibold text-base">Benefits</h4>
+                                  <h4 className="font-semibold text-base">{t('benefits_label')}</h4>
                                   <p className="text-sm text-muted-foreground">{scheme.benefits}</p>
                             </div>
                               <div>
-                                  <h4 className="font-semibold text-base">Application Process</h4>
+                                  <h4 className="font-semibold text-base">{t('application_process_label')}</h4>
                                   <p className="text-sm text-muted-foreground">{scheme.applicationProcess}</p>
                             </div>
                             {scheme.link && (
                               <Button asChild variant="link" className="p-0 h-auto">
-                                  <a href={scheme.link} target="_blank" rel="noopener noreferrer">Learn More</a>
+                                  <a href={scheme.link} target="_blank" rel="noopener noreferrer">{t('learn_more_button')}</a>
                               </Button>
                             )}
                           </AccordionContent>
@@ -244,14 +246,14 @@ export default function GovernmentSchemesPage() {
             )}
              {result && result.schemes.length === 0 && (
               <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed text-center text-muted-foreground">
-                <p>No schemes found for your query.</p>
-                <p className="text-sm">Try using different keywords.</p>
+                <p>{t('no_schemes_found_message')}</p>
+                <p className="text-sm">{t('try_different_keywords_message')}</p>
               </div>
             )}
             {!isLoading && !result && (
               <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed text-center text-muted-foreground">
-                 <Image src="https://placehold.co/600x400.png" alt="Government building" data-ai-hint="government building" width={300} height={200} className="rounded-lg opacity-50"/>
-                <p className="mt-4">Search results for government schemes will appear here.</p>
+                 <Image src="https://placehold.co/600x400.png" alt={t('schemes_placeholder_alt')} data-ai-hint="government building" width={300} height={200} className="rounded-lg opacity-50"/>
+                <p className="mt-4">{t('schemes_placeholder_text')}</p>
               </div>
             )}
           </div>
