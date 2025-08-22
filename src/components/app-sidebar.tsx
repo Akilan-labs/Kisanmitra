@@ -32,7 +32,7 @@ export function AppSidebar() {
   ];
 
   return (
-    <Sidebar>
+    <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-2">
           <Icons.logo className="h-8 w-8 text-accent" />
