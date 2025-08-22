@@ -384,5 +384,4 @@ export default function DiseaseDiagnosisPage() {
       </main>
     </div>
   );
-
-    
+}
