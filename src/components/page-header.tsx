@@ -1,5 +1,6 @@
+
 import type { FC, ReactNode } from 'react';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarMobile } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 
 type PageHeaderProps = {
@@ -16,7 +17,9 @@ export const PageHeader: FC<PageHeaderProps> = ({ title, children, className }) 
         className
       )}
     >
-      <SidebarTrigger className="md:hidden" />
+      <SidebarMobile>
+         {/* This will render the SheetTrigger */}
+      </SidebarMobile>
       <h1 className="flex-1 text-lg font-semibold md:text-xl font-headline">{title}</h1>
       {children}
     </header>

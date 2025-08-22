@@ -12,16 +12,20 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
+  SidebarMobile,
 } from '@/components/ui/sidebar';
 import { Icons } from '@/components/icons';
 import { useTranslation } from '@/hooks/use-translation';
 import { useLanguage } from '@/hooks/use-language';
+import { cn } from '@/lib/utils';
 
 
-export function AppSidebar() {
+function SidebarNavigation() {
   const pathname = usePathname();
   const { language } = useLanguage();
   const { t } = useTranslation(language);
+  const { isCollapsed } = useSidebar();
 
   const links = [
     { href: '/disease-diagnosis', label: t('sidebar_crop_disease'), icon: Leaf },
@@ -30,13 +34,12 @@ export function AppSidebar() {
     { href: '/yield-prediction', label: t('sidebar_yield_prediction'), icon: Warehouse },
     { href: '/ai-assistant', label: t('sidebar_ai_assistant'), icon: Bot },
   ];
-
   return (
-    <Sidebar variant="floating" collapsible="icon">
+    <>
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-2">
-          <Icons.logo className="h-8 w-8 text-accent" />
-          <h1 className="text-xl font-bold text-sidebar-foreground group-data-[collapsible=icon]:hidden font-headline">
+          <Icons.logo className="h-8 w-8 text-primary" />
+          <h1 className={cn("text-xl font-bold text-foreground font-headline", isCollapsed && "hidden")}>
             KisanMitra
           </h1>
         </Link>
@@ -47,7 +50,7 @@ export function AppSidebar() {
             <SidebarMenuItem key={link.href}>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === link.href}
+                isActive={pathname.startsWith(link.href)}
                 className="justify-start"
                 tooltip={{ children: link.label }}
               >
@@ -60,6 +63,19 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-    </Sidebar>
+    </>
+  )
+}
+
+export function AppSidebar() {
+  return (
+    <>
+      <Sidebar>
+        <SidebarNavigation />
+      </Sidebar>
+      <SidebarMobile>
+         <SidebarNavigation />
+      </SidebarMobile>
+    </>
   );
 }

@@ -26,10 +26,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased bg-muted/40">
         <LanguageProvider>
           <SidebarProvider>
-              <div className="flex">
+              <div className="flex min-h-screen">
                 <AppSidebar />
                 <SidebarInset>{children}</SidebarInset>
               </div>
