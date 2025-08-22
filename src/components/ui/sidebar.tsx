@@ -88,34 +88,25 @@ const SidebarProvider = React.forwardRef<
     )
 
     // Helper to toggle the sidebar.
-    const toggleSidebar = React. useCallback(() => {
-       setOpenMobile((open) => !open)
-    }, [setOpenMobile])
-
-    const desktopToggle = React.useCallback(() => {
+     const toggleSidebar = React.useCallback(() => {
         setOpen((open) => !open)
-    }, [setOpen]);
+     }, [setOpen]);
 
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
-      const handleKeyDown = (event: KeyboardEvent) => {
-        if (
-          event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
-          (event.metaKey || event.ctrlKey)
-        ) {
-          event.preventDefault()
-           if (window.innerWidth < 768) {
-             toggleSidebar()
-           } else {
-            desktopToggle()
-           }
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (
+            event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
+            (event.metaKey || event.ctrlKey)
+            ) {
+            event.preventDefault()
+            toggleSidebar();
+            }
         }
-      }
-
-      window.addEventListener("keydown", handleKeyDown)
-      return () => window.removeEventListener("keydown", handleKeyDown)
-    }, [toggleSidebar, desktopToggle])
+        window.addEventListener("keydown", handleKeyDown)
+        return () => window.removeEventListener("keydown", handleKeyDown)
+    }, [toggleSidebar])
 
     // We add a state so that we can do data-state="expanded" or "collapsed".
     // This makes it easier to style the sidebar with Tailwind classes.
@@ -128,9 +119,9 @@ const SidebarProvider = React.forwardRef<
         setOpen,
         openMobile,
         setOpenMobile,
-        toggleSidebar: desktopToggle,
+        toggleSidebar,
       }),
-      [state, open, setOpen, openMobile, setOpenMobile, desktopToggle]
+      [state, open, setOpen, openMobile, setOpenMobile, toggleSidebar]
     )
 
     return (
@@ -145,7 +136,7 @@ const SidebarProvider = React.forwardRef<
               } as React.CSSProperties
             }
             className={cn(
-              "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
+              "group/sidebar-wrapper flex min-h-svh w-full",
               className
             )}
             ref={ref}
@@ -180,6 +171,15 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { state, openMobile, setOpenMobile } = useSidebar()
+     const [isMounted, setIsMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) {
+        return null;
+    }
 
     return (
      <>
@@ -201,31 +201,18 @@ const Sidebar = React.forwardRef<
       
         <div
             ref={ref}
-            className="group peer hidden md:block text-sidebar-foreground"
+            className={cn("group peer hidden md:block text-sidebar-foreground", className)}
             data-state={state}
             data-collapsible={state === "collapsed" ? collapsible : ""}
             data-variant={variant}
             data-side={side}
         >
-            {/* This is what handles the sidebar gap on desktop */}
             <div
             className={cn(
-                "duration-200 relative h-svh bg-transparent transition-[width] ease-in-out",
-                 variant === "sidebar" || variant === "inset" ? 'w-[--sidebar-width]' : 'w-0',
-                "group-data-[collapsible=offcanvas]:w-0",
-                "group-data-[side=right]:rotate-180",
-                variant === "floating" || variant === "inset"
-                ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-                : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
-            )}
-            />
-            <div
-            className={cn(
-                "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-in-out md:flex",
+                "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[width] ease-in-out md:flex",
                 side === "left"
-                ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
-                : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
-                // Adjust the padding for floating and inset variants.
+                ? "left-0"
+                : "right-0",
                 variant === "floating" || variant === "inset"
                 ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
                 : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
@@ -251,7 +238,16 @@ const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar, setOpenMobile } = useSidebar();
+  const { setOpenMobile } = useSidebar();
+  const [isMounted, setIsMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) {
+        return null;
+    }
   
   return (
     <Button
@@ -303,15 +299,18 @@ const SidebarRail = React.forwardRef<
 SidebarRail.displayName = "SidebarRail"
 
 const SidebarInset = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLElement,
+  React.HTMLAttributes<HTMLElement>
 >(({ className, ...props }, ref) => {
   return (
     <main
       ref={ref}
       className={cn(
-        "relative flex min-h-svh flex-1 flex-col bg-background",
-        "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
+        "relative flex min-h-svh flex-1 flex-col bg-background transition-[margin-left] duration-200 ease-in-out",
+        "group-data-[side=left]:group-data-[state=expanded]:group-data-[collapsible=icon]:md:ml-[calc(var(--sidebar-width-icon)+theme(spacing.4)+2px)]",
+        "group-data-[side=left]:group-data-[state=expanded]:group-data-[variant=sidebar]:md:ml-[var(--sidebar-width)]",
+        "group-data-[side=left]:group-data-[state=collapsed]:group-data-[collapsible=icon]:md:ml-[calc(var(--sidebar-width-icon)+theme(spacing.4)+2px)]",
+        "group-data-[side=left]:group-data-[state=collapsed]:group-data-[variant=sidebar]:md:ml-[var(--sidebar-width-icon)]",
         className
       )}
       {...props}

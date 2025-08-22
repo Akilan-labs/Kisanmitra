@@ -29,8 +29,10 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <LanguageProvider>
           <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>{children}</SidebarInset>
+              <div className="flex">
+                <AppSidebar />
+                <SidebarInset>{children}</SidebarInset>
+              </div>
           </SidebarProvider>
           <Toaster />
         </LanguageProvider>
