@@ -340,7 +340,7 @@ export default function DiseaseDiagnosisPage() {
                               <CardTitle className="font-headline text-lg flex items-center gap-2">
                                   <TreeDeciduous className="h-5 w-5 text-primary" />
                                   {t('organic_remedies_label')}
-                              </Title>
+                              </CardTitle>
                           </CardHeader>
                            <CardContent>
                               <p className="text-foreground/90 whitespace-pre-wrap">{result.organicRemedies}</p>
@@ -351,7 +351,7 @@ export default function DiseaseDiagnosisPage() {
                               <CardTitle className="font-headline text-lg flex items-center gap-2">
                                   <TestTube className="h-5 w-5 text-primary" />
                                   {t('chemical_remedies_label')}
-                              </Title>
+                              </CardTitle>
                           </CardHeader>
                            <CardContent>
                               <p className="text-foreground/90 whitespace-pre-wrap">{result.chemicalRemedies}</p>
@@ -384,4 +384,5 @@ export default function DiseaseDiagnosisPage() {
       </main>
     </div>
   );
-}
+
+    
