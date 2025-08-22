@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -14,14 +15,13 @@ import {
 } from '@/components/ui/sidebar';
 import { Icons } from '@/components/icons';
 import { useTranslation } from '@/hooks/use-translation';
-import { useState } from 'react';
+import { useLanguage } from '@/hooks/use-language';
 
 
 export function AppSidebar() {
   const pathname = usePathname();
-  // We don't have access to language from URL params, so we'll default to 'en' for the sidebar.
-  // A more robust solution would involve a global state manager or context for language.
-  const { t } = useTranslation('en');
+  const { language } = useLanguage();
+  const { t } = useTranslation(language);
 
   const links = [
     { href: '/disease-diagnosis', label: t('sidebar_crop_disease'), icon: Leaf },

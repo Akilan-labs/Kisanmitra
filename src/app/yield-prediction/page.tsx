@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -40,6 +41,7 @@ import type { PredictYieldOutput } from '@/ai/flows/predict-yield';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { useTranslation } from '@/hooks/use-translation';
+import { useLanguage } from '@/hooks/use-language';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
@@ -63,7 +65,7 @@ const fileToDataUri = (file: File): Promise<string> => {
 };
 
 export default function YieldPredictionPage() {
-  const [language, setLanguage] = useState('en');
+  const { language, setLanguage } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PredictYieldOutput | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -143,7 +145,7 @@ export default function YieldPredictionPage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title={t('yield_prediction_title')}>
-        <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
+        <LanguageSwitcher />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="grid gap-6 lg:grid-cols-2">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef } from 'react';
@@ -31,6 +32,7 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart';
 import { useTranslation } from '@/hooks/use-translation';
+import { useLanguage } from '@/hooks/use-language';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
@@ -47,7 +49,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function MarketIntelligencePage() {
-  const [language, setLanguage] = useState('en');
+  const { language, setLanguage } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<GetMarketPriceOutput | null>(null);
   const [isRecording, setIsRecording] = useState<FieldName | null>(null);
@@ -148,7 +150,7 @@ export default function MarketIntelligencePage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title={t('market_intelligence_title')}>
-        <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
+        <LanguageSwitcher />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="grid gap-6 lg:grid-cols-2">

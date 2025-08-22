@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -23,6 +24,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { useTranslation } from '@/hooks/use-translation';
+import { useLanguage } from '@/hooks/use-language';
 
 type Message = {
   id: string;
@@ -37,7 +39,7 @@ const formSchema = z.object({
 export default function AIAssistantPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [language, setLanguage] = useState('en');
+  const { language, setLanguage } = useLanguage();
   const [isRecording, setIsRecording] = useState(false);
   
   const { t } = useTranslation(language);
@@ -141,7 +143,7 @@ export default function AIAssistantPage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title={t('ai_assistant_title')}>
-        <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
+        <LanguageSwitcher />
       </PageHeader>
       <main className="flex flex-1 flex-col overflow-y-auto p-4 md:p-6">
         <div className="flex-1">

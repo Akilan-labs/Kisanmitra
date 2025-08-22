@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -8,21 +9,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Languages } from 'lucide-react';
+import { useLanguage } from '@/hooks/use-language';
 
-type LanguageSwitcherProps = {
-  language: string;
-  onLanguageChange: (lang: string) => void;
-  className?: string;
-};
 
 export function LanguageSwitcher({
-  language,
-  onLanguageChange,
   className,
-}: LanguageSwitcherProps) {
+}: {
+  className?: string;
+}) {
+  const { language, setLanguage } = useLanguage();
   return (
     <div className={className}>
-      <Select value={language} onValueChange={onLanguageChange}>
+      <Select value={language} onValueChange={setLanguage}>
         <SelectTrigger className="w-auto gap-2">
           <Languages className="h-4 w-4" />
           <SelectValue placeholder="Language" />

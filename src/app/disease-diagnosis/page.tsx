@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -24,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslation } from '@/hooks/use-translation';
+import { useLanguage } from '@/hooks/use-language';
 
 
 const fileToDataUri = (file: File): Promise<string> => {
@@ -40,7 +42,7 @@ const fileToDataUri = (file: File): Promise<string> => {
 export default function DiseaseDiagnosisPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [language, setLanguage] = useState('en');
+  const { language, setLanguage } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<DiagnoseCropDiseaseOutput | null>(null);
   const { toast } = useToast();
@@ -183,7 +185,7 @@ export default function DiseaseDiagnosisPage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title={t('crop_disease_diagnosis_title')}>
-        <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
+        <LanguageSwitcher />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="grid gap-6 lg:grid-cols-2">

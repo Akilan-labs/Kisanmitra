@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef } from 'react';
@@ -18,6 +19,7 @@ import type { FindGovernmentSchemesOutput } from '@/ai/flows/find-government-sch
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useTranslation } from '@/hooks/use-translation';
+import { useLanguage } from '@/hooks/use-language';
 
 const formSchema = z.object({
   query: z.string().min(3, 'Please enter at least 3 characters.'),
@@ -26,7 +28,7 @@ const formSchema = z.object({
 export default function GovernmentSchemesPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<FindGovernmentSchemesOutput | null>(null);
-  const [language, setLanguage] = useState('en');
+  const { language, setLanguage } = useLanguage();
   const [isRecording, setIsRecording] = useState(false);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -151,7 +153,7 @@ export default function GovernmentSchemesPage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title={t('government_schemes_title')}>
-        <LanguageSwitcher language={language} onLanguageChange={handleLanguageChange} />
+        <LanguageSwitcher />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="mx-auto max-w-3xl">
