@@ -119,12 +119,15 @@ export default function AIAssistantPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     const userMessage: Message = { id: uuidv4(), role: 'user', text: values.query };
-    setMessages((prev) => [...prev, userMessage]);
+    
+    const currentMessages = [...messages, userMessage];
+    setMessages(currentMessages);
     form.reset();
 
     try {
-      const history = messages.map(m => ({role: m.role, text: m.text}));
+      const history = currentMessages.slice(0, -1).map(m => ({role: m.role, text: m.text}));
       const response = await askAIAction({ query: values.query, language, history });
+      
       if (response.success) {
         const assistantMessage: Message = { id: uuidv4(), role: 'assistant', text: response.data.answer };
         setMessages((prev) => [...prev, assistantMessage]);
