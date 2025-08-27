@@ -10,15 +10,17 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {Message, role} from 'genkit/model';
+import {z} from 'zod';
 
 const AskAIInputSchema = z.object({
-  query: z.string().describe('The user\'s question or message.'),
-  language: z.string().describe('The language for the response.'),
   history: z.array(z.object({
-    role: z.enum(['user', 'assistant']),
-    text: z.string(),
-  })).optional().describe('The conversation history.'),
+    role: z.enum(['user', 'model']),
+    content: z.array(z.object({
+        text: z.string()
+    })),
+  })),
+  language: z.string().describe('The language for the response.'),
 });
 export type AskAIInput = z.infer<typeof AskAIInputSchema>;
 
@@ -31,27 +33,6 @@ export async function askAI(input: AskAIInput): Promise<AskAIOutput> {
   return askAIFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'askAIPrompt',
-  input: {schema: AskAIInputSchema},
-  output: {schema: AskAIOutputSchema},
-  prompt: `You are KisanMitra, an expert AI assistant for farmers. Your goal is to provide helpful, accurate, and concise advice on a wide range of agricultural topics.
-Always answer in the user's specified language.
-
-User's Language: {{{language}}}
-
-{{#if history}}
-Conversation History:
-{{#each history}}
-{{#if (eq role 'user')}}User: {{text}}{{/if}}
-{{#if (eq role 'assistant')}}Assistant: {{text}}{{/if}}
-{{/each}}
-{{/if}}
-
-Current User Query: {{{query}}}
-`,
-});
-
 
 const askAIFlow = ai.defineFlow(
   {
@@ -59,9 +40,21 @@ const askAIFlow = ai.defineFlow(
     inputSchema: AskAIInputSchema,
     outputSchema: AskAIOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async ({history, language}) => {
+    const systemPrompt = `You are KisanMitra, an expert AI assistant for farmers. Your goal is to provide helpful, accurate, and concise advice on a wide range of agricultural topics. Always answer in the user's specified language: ${language}.`;
+
+    const messages: Message[] = [
+        role('system', systemPrompt),
+        ...history.map(msg => new Message(msg.role, msg.content))
+    ]
+    
+    const response = await ai.generate({
+      model: 'googleai/gemini-2.0-flash',
+      messages: messages,
+    });
+    
+    return {
+      answer: response.text,
+    };
   }
 );
-

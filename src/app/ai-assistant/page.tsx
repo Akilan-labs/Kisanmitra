@@ -28,7 +28,7 @@ import { useLanguage } from '@/hooks/use-language';
 
 type Message = {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'model';
   text: string;
 };
 
@@ -120,23 +120,27 @@ export default function AIAssistantPage() {
     setIsLoading(true);
     const userMessage: Message = { id: uuidv4(), role: 'user', text: values.query };
     
-    const currentMessages = [...messages, userMessage];
-    setMessages(currentMessages);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     form.reset();
 
     try {
-      const history = currentMessages.slice(0, -1).map(m => ({role: m.role, text: m.text}));
-      const response = await askAIAction({ query: values.query, language, history });
+      const history = newMessages.map(m => ({
+        role: m.role,
+        content: [{text: m.text}],
+      }));
+
+      const response = await askAIAction({ history, language });
       
       if (response.success) {
-        const assistantMessage: Message = { id: uuidv4(), role: 'assistant', text: response.data.answer };
+        const assistantMessage: Message = { id: uuidv4(), role: 'model', text: response.data.answer };
         setMessages((prev) => [...prev, assistantMessage]);
       } else {
-        const errorMessage: Message = { id: uuidv4(), role: 'assistant', text: `${t('error_prefix')}: ${response.error}` };
+        const errorMessage: Message = { id: uuidv4(), role: 'model', text: `${t('error_prefix')}: ${response.error}` };
         setMessages((prev) => [...prev, errorMessage]);
       }
     } catch (error) {
-       const errorMessage: Message = { id: uuidv4(), role: 'assistant', text: t('unexpected_error_short') };
+       const errorMessage: Message = { id: uuidv4(), role: 'model', text: t('unexpected_error_short') };
        setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -161,7 +165,7 @@ export default function AIAssistantPage() {
               )}
               {messages.map((message) => (
                 <div key={message.id} className={cn("flex items-start gap-4", message.role === 'user' && 'justify-end')}>
-                  {message.role === 'assistant' && (
+                  {message.role === 'model' && (
                     <Avatar className="h-8 w-8">
                        <AvatarFallback><Bot /></AvatarFallback>
                     </Avatar>

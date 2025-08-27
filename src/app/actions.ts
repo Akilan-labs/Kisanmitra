@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -186,12 +187,13 @@ export async function predictYieldAction(
 }
 
 const askAISchema = z.object({
-  query: z.string().min(1, "Query cannot be empty."),
-  language: z.string(),
   history: z.array(z.object({
-    role: z.enum(['user', 'assistant']),
-    text: z.string(),
-  })).optional(),
+    role: z.enum(['user', 'model']),
+    content: z.array(z.object({
+        text: z.string()
+    })),
+  })),
+  language: z.string(),
 });
 
 
