@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -10,7 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {Message, role} from 'genkit/model';
+import {MessageData} from 'genkit/model';
 import {z} from 'zod';
 
 const AskAIInputSchema = z.object({
@@ -43,9 +42,9 @@ const askAIFlow = ai.defineFlow(
   async ({history, language}) => {
     const systemPrompt = `You are KisanMitra, an expert AI assistant for farmers. Your goal is to provide helpful, accurate, and concise advice on a wide range of agricultural topics. Always answer in the user's specified language: ${language}.`;
 
-    const messages: Message[] = [
-        role('system', systemPrompt),
-        ...history.map(msg => new Message(msg.role, msg.content))
+    const messages: MessageData[] = [
+        {role: 'system', content: [{text: systemPrompt}]},
+        ...history.map(msg => ({role: msg.role as 'user' | 'model', content: msg.content}))
     ]
     
     const response = await ai.generate({

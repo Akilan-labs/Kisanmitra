@@ -14,7 +14,6 @@ import {
   speechToTextAction,
 } from '@/app/actions';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/page-header';
@@ -30,6 +29,7 @@ type Message = {
   id: string;
   role: 'user' | 'model';
   text: string;
+  isError?: boolean;
 };
 
 const formSchema = z.object({
@@ -125,10 +125,12 @@ export default function AIAssistantPage() {
     form.reset();
 
     try {
-      const history = newMessages.map(m => ({
-        role: m.role,
-        content: [{text: m.text}],
-      }));
+      const history = newMessages
+        .filter(m => !m.isError) // Do not include error messages in history
+        .map(m => ({
+          role: m.role,
+          content: [{text: m.text}],
+        }));
 
       const response = await askAIAction({ history, language });
       
@@ -136,11 +138,11 @@ export default function AIAssistantPage() {
         const assistantMessage: Message = { id: uuidv4(), role: 'model', text: response.data.answer };
         setMessages((prev) => [...prev, assistantMessage]);
       } else {
-        const errorMessage: Message = { id: uuidv4(), role: 'model', text: `${t('error_prefix')}: ${response.error}` };
+        const errorMessage: Message = { id: uuidv4(), role: 'model', text: `${t('error_prefix')}: ${response.error}`, isError: true };
         setMessages((prev) => [...prev, errorMessage]);
       }
     } catch (error) {
-       const errorMessage: Message = { id: uuidv4(), role: 'model', text: t('unexpected_error_short') };
+       const errorMessage: Message = { id: uuidv4(), role: 'model', text: t('unexpected_error_short'), isError: true };
        setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -170,7 +172,7 @@ export default function AIAssistantPage() {
                        <AvatarFallback><Bot /></AvatarFallback>
                     </Avatar>
                   )}
-                  <div className={cn("max-w-md rounded-lg p-3", message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
+                  <div className={cn("max-w-md rounded-lg p-3", message.role === 'user' ? 'bg-primary text-primary-foreground' : (message.isError ? 'bg-destructive/20 text-destructive-foreground' : 'bg-muted' ))}>
                     <p className="whitespace-pre-wrap text-sm">{message.text}</p>
                   </div>
                    {message.role === 'user' && (
