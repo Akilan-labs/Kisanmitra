@@ -24,7 +24,7 @@ const AskAIInputSchema = z.object({
 export type AskAIInput = z.infer<typeof AskAIInputSchema>;
 
 const AskAIOutputSchema = z.object({
-  answer: z.string().describe('The AI\'s response to the user\'s query.'),
+  answer: z.string().describe("The AI's response to the user's query."),
 });
 export type AskAIOutput = z.infer<typeof AskAIOutputSchema>;
 
