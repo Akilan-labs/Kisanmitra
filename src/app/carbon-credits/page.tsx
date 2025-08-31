@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Sparkles, Recycle, Trees, HandCoins, Info, Briefcase } from 'lucide-react';
+import { Loader2, Sparkles, Recycle, Trees, HandCoins, Info, Briefcase, FileImage } from 'lucide-react';
 import Image from 'next/image';
 
 import { estimateCarbonCreditsAction } from '@/app/actions';
@@ -41,15 +41,33 @@ import type { EstimateCarbonCreditsOutput } from '@/ai/schemas/carbon-credits';
 import { useTranslation } from '@/hooks/use-translation';
 import { useLanguage } from '@/hooks/use-language';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
 
+const fileToDataUri = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
 
 const formSchema = z.object({
   projectType: z.enum(['agroforestry', 'rice_cultivation']),
   hectares: z.coerce.number().positive('Area is required.'),
   region: z.string().min(2, 'Region is required.'),
+  
+  // Agroforestry
   treeCount: z.coerce.number().optional(),
-  waterManagement: z.enum(['flooded', 'intermittent', 'drained']).optional(),
-  tillage: z.enum(['conventional', 'no-till']).optional(),
+  plantingYear: z.coerce.number().optional(),
+
+  // Rice
+  waterManagement: z.enum(['flooded', 'intermittent_awd', 'drained']).optional(),
+  strawManagement: z.enum(['removed', 'incorporated_retained', 'burned']).optional(),
+  plantingDate: z.string().optional(),
+  harvestDate: z.string().optional(),
 });
 
 
@@ -58,6 +76,8 @@ export default function CarbonCreditsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<EstimateCarbonCreditsOutput | null>(null);
   const [projectType, setProjectType] = useState<'agroforestry' | 'rice_cultivation'>('agroforestry');
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const { toast } = useToast();
   const { t } = useTranslation(language);
@@ -70,6 +90,18 @@ export default function CarbonCreditsPage() {
       region: '',
     },
   });
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleTabChange = (value: string) => {
     const newProjectType = value as 'agroforestry' | 'rice_cultivation';
@@ -88,8 +120,23 @@ export default function CarbonCreditsPage() {
     setIsLoading(true);
     setResult(null);
 
+    let photoDataUri: string | undefined = undefined;
+    if (imageFile) {
+      try {
+        photoDataUri = await fileToDataUri(imageFile);
+      } catch (error) {
+        toast({
+          title: t('image_error_title'),
+          description: t('image_error_description'),
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+        return;
+      }
+    }
+
     try {
-      const response = await estimateCarbonCreditsAction({ ...values, language });
+      const response = await estimateCarbonCreditsAction({ ...values, language, photoDataUri });
       if (response.success) {
         setResult(response.data);
       } else {
@@ -135,96 +182,165 @@ export default function CarbonCreditsPage() {
                     </Tabs>
 
                     <div className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="hectares"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>{t('area_hectares_label')}</FormLabel>
-                                <FormControl>
-                                    <Input type="number" placeholder="e.g., 2.5" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                         <FormField
-                            control={form.control}
-                            name="region"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>{t('region_country_label')}</FormLabel>
-                                <FormControl>
-                                    <Input placeholder={t('region_placeholder')} {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {projectType === 'agroforestry' && (
-                             <FormField
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <FormField
                                 control={form.control}
-                                name="treeCount"
+                                name="hectares"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel>{t('number_of_trees_label')}</FormLabel>
+                                    <FormLabel>{t('area_hectares_label')}</FormLabel>
                                     <FormControl>
-                                        <Input type="number" placeholder="e.g., 500" {...field} />
+                                        <Input type="number" placeholder="e.g., 2.5" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                     </FormItem>
                                 )}
                             />
+                             <FormField
+                                control={form.control}
+                                name="region"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>{t('region_country_label')}</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={t('region_placeholder')} {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+
+                        {projectType === 'agroforestry' && (
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name="treeCount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                        <FormLabel>{t('number_of_trees_label')}</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" placeholder="e.g., 500" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="plantingYear"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                        <FormLabel>{t('planting_year_label')}</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" placeholder="e.g., 2020" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         )}
 
                         {projectType === 'rice_cultivation' && (
-                           <>
-                             <FormField
-                                control={form.control}
-                                name="waterManagement"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormLabel>{t('water_management_label')}</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={t('water_management_placeholder')} />
-                                        </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="flooded">{t('water_management_flooded')}</SelectItem>
-                                            <SelectItem value="intermittent">{t('water_management_intermittent')}</SelectItem>
-                                            <SelectItem value="drained">{t('water_management_drained')}</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                    </FormItem>
-                                )}
-                                />
-                                <FormField
-                                control={form.control}
-                                name="tillage"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormLabel>{t('tillage_practice_label')}</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={t('tillage_practice_placeholder')} />
-                                        </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                             <SelectItem value="conventional">{t('tillage_conventional')}</SelectItem>
-                                             <SelectItem value="no-till">{t('tillage_no_till')}</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                    </FormItem>
-                                )}
-                                />
-                           </>
+                           <div className="space-y-4">
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                               <FormField
+                                  control={form.control}
+                                  name="waterManagement"
+                                  render={({ field }) => (
+                                      <FormItem>
+                                      <FormLabel>{t('water_management_label')}</FormLabel>
+                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                          <FormControl>
+                                          <SelectTrigger>
+                                              <SelectValue placeholder={t('water_management_placeholder')} />
+                                          </SelectTrigger>
+                                          </FormControl>
+                                          <SelectContent>
+                                              <SelectItem value="flooded">{t('water_management_flooded')}</SelectItem>
+                                              <SelectItem value="intermittent_awd">{t('water_management_intermittent_awd')}</SelectItem>
+                                              <SelectItem value="drained">{t('water_management_drained')}</SelectItem>
+                                          </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                      </FormItem>
+                                  )}
+                                  />
+                                  <FormField
+                                    control={form.control}
+                                    name="strawManagement"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                        <FormLabel>{t('straw_management_label')}</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={t('straw_management_placeholder')} />
+                                            </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="removed">{t('straw_management_removed')}</SelectItem>
+                                                <SelectItem value="incorporated_retained">{t('straw_management_incorporated')}</SelectItem>
+                                                <SelectItem value="burned">{t('straw_management_burned')}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                  />
+                              </div>
+                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                  <FormField
+                                      control={form.control}
+                                      name="plantingDate"
+                                      render={({ field }) => (
+                                          <FormItem>
+                                          <FormLabel>{t('planting_date_label')}</FormLabel>
+                                          <FormControl>
+                                              <Input type="date" {...field} />
+                                          </FormControl>
+                                          <FormMessage />
+                                          </FormItem>
+                                      )}
+                                  />
+                                   <FormField
+                                      control={form.control}
+                                      name="harvestDate"
+                                      render={({ field }) => (
+                                          <FormItem>
+                                          <FormLabel>{t('harvest_date_label')}</FormLabel>
+                                          <FormControl>
+                                              <Input type="date" {...field} />
+                                          </FormControl>
+                                          <FormMessage />
+                                          </FormItem>
+                                      )}
+                                  />
+                              </div>
+                           </div>
                         )}
+                         <div className="space-y-2">
+                            <Label htmlFor="farm-photo">{t('farm_photo_label')}</Label>
+                             <Input id="farm-photo" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                             <div className="flex aspect-video w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 hover:bg-muted/75" onClick={() => document.getElementById('farm-photo')?.click()}>
+                                {imagePreview ? (
+                                    <Image
+                                    src={imagePreview}
+                                    alt={t('farm_photo_preview_alt')}
+                                    width={600}
+                                    height={400}
+                                    className="h-full w-full object-contain rounded-lg"
+                                    />
+                                ) : (
+                                    <div className="text-center text-muted-foreground">
+                                    <FileImage className="mx-auto h-12 w-12" />
+                                    <p className="mt-2">{t('upload_geotagged_photo_prompt')}</p>
+                                    </div>
+                                )}
+                            </div>
+                         </div>
                     </div>
                 </CardContent>
                 <CardFooter>
@@ -279,7 +395,7 @@ export default function CarbonCreditsPage() {
                       <Info className="h-5 w-5" />
                       {t('how_it_was_calculated_label')}
                     </h3>
-                    <p className="text-sm text-foreground/90">{result.explanation}</p>
+                    <p className="text-sm text-foreground/90 whitespace-pre-wrap">{result.explanation}</p>
                   </div>
 
                    <div className="space-y-2">

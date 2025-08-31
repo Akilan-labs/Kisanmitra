@@ -269,12 +269,16 @@ export async function forecastDiseaseOutbreakAction(
 
 const estimateCarbonCreditsSchema = z.object({
     projectType: z.enum(['agroforestry', 'rice_cultivation']),
-    treeCount: z.coerce.number().optional(),
     hectares: z.coerce.number().positive(),
     region: z.string().min(2),
-    waterManagement: z.enum(['flooded', 'intermittent', 'drained']).optional(),
-    tillage: z.enum(['conventional', 'no-till']).optional(),
     language: z.string(),
+    treeCount: z.coerce.number().optional(),
+    plantingYear: z.coerce.number().optional(),
+    waterManagement: z.enum(['flooded', 'intermittent_awd', 'drained']).optional(),
+    strawManagement: z.enum(['removed', 'incorporated_retained', 'burned']).optional(),
+    plantingDate: z.string().optional(),
+    harvestDate: z.string().optional(),
+    photoDataUri: z.string().optional(),
 });
 
 
