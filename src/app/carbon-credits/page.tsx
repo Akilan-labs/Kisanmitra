@@ -109,7 +109,7 @@ export default function CarbonCreditsPage() {
     form.setValue('projectType', newProjectType);
     form.reset({
         projectType: newProjectType,
-        hectares: 1,
+        hectares: form.getValues('hectares') || 1,
         region: form.getValues('region'),
     })
     setResult(null);

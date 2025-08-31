@@ -38,7 +38,7 @@ const prompt = ai.definePrompt({
 5.  **Estimate Revenue:** Provide a potential revenue range in USD, assuming a conservative market price for carbon credits (e.g., $5 to $15 per tCO₂e).
 6.  **Provide Next Steps:** Give the farmer clear, simple, and actionable next steps on how they could get started with a formal carbon project.
 {{#if photoDataUri}}
-7.  **Photo Analysis**: Briefly mention that the provided photo can be used for future verification but do not perform an analysis of it.
+7.  **Photo Analysis**: If a photo is provided, acknowledge it by stating that it can be used for future visual verification, but do not perform a detailed analysis of the image itself for this estimation.
 {{/if}}
 
 **Project Details:**
@@ -53,6 +53,9 @@ const prompt = ai.definePrompt({
 {{#if harvestDate}}*   Harvest Date: {{{harvestDate}}}{{/if}}
 
 Respond in the specified language: {{{language}}}.
+{{#if photoDataUri}}
+Photo: {{media url=photoDataUri}}
+{{/if}}
   `,
 });
 
