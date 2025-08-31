@@ -19,7 +19,7 @@ const PredictYieldInputSchema = z.object({
   region: z.string().describe('The geographical region or state.'),
   language: z.string().describe('The language for the response.'),
   photoDataUri: z.string().optional().describe(
-    "An optional photo of the crop field, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+    "An optional photo of the crop field, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
   ),
 });
 export type PredictYieldInput = z.infer<typeof PredictYieldInputSchema>;
