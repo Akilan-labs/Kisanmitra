@@ -47,6 +47,13 @@ import {
   type ForecastDiseaseOutbreakInput,
   type ForecastDiseaseOutbreakOutput,
 } from '@/ai/flows/forecast-disease-outbreak';
+import {
+    estimateCarbonCredits,
+} from '@/ai/flows/estimate-carbon-credits';
+import {
+    EstimateCarbonCreditsInput,
+    EstimateCarbonCreditsOutput
+} from '@/ai/schemas/carbon-credits';
 
 
 const diagnoseCropDiseaseSchema = z.object({
@@ -257,4 +264,33 @@ export async function forecastDiseaseOutbreakAction(
     console.error(error);
     return { success: false, error: 'An unexpected error occurred during the forecast. Please try again.' };
   }
+}
+
+
+const estimateCarbonCreditsSchema = z.object({
+    projectType: z.enum(['agroforestry', 'rice_cultivation']),
+    treeCount: z.coerce.number().optional(),
+    hectares: z.coerce.number().positive(),
+    region: z.string().min(2),
+    waterManagement: z.enum(['flooded', 'intermittent', 'drained']).optional(),
+    tillage: z.enum(['conventional', 'no-till']).optional(),
+    language: z.string(),
+});
+
+
+export async function estimateCarbonCreditsAction(
+    input: EstimateCarbonCreditsInput
+): Promise<{ success: true; data: EstimateCarbonCreditsOutput } | { success: false; error: string }> {
+    const parsed = estimateCarbonCreditsSchema.safeParse(input);
+    if (!parsed.success) {
+        const errorMessage = Object.values(parsed.error.flatten().fieldErrors).flat()[0] ?? 'Invalid input. Please check the form and try again.';
+        return { success: false, error: errorMessage };
+    }
+    try {
+        const result = await estimateCarbonCredits(parsed.data);
+        return { success: true, data: result };
+    } catch (error) {
+        console.error(error);
+        return { success: false, error: 'An unexpected error occurred during carbon credit estimation. Please try again.' };
+    }
 }

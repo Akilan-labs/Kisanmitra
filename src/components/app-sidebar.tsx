@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, Leaf, LineChart, ScrollText, Warehouse, CloudSun, ShieldAlert } from 'lucide-react';
+import { Bot, Leaf, LineChart, ScrollText, Warehouse, CloudSun, ShieldAlert, Recycle } from 'lucide-react';
 
 import {
   Sidebar,
@@ -33,6 +33,7 @@ function SidebarNavigation() {
     { href: '/yield-prediction', label: t('sidebar_yield_prediction'), icon: Warehouse },
     { href: '/weather-forecast', label: t('sidebar_weather_forecast'), icon: CloudSun },
     { href: '/disease-outbreak-forecast', label: t('sidebar_disease_outbreak_forecast'), icon: ShieldAlert },
+    { href: '/carbon-credits', label: t('sidebar_carbon_credits'), icon: Recycle },
     { href: '/ai-assistant', label: t('sidebar_ai_assistant'), icon: Bot },
   ];
   return (
@@ -69,9 +70,15 @@ function SidebarNavigation() {
 }
 
 export function AppSidebar() {
+    const { isCollapsed } = useSidebar();
   return (
     <>
-      <Sidebar>
+       <Sidebar
+        className={cn(
+          'group fixed inset-y-0 left-0 z-20 hidden h-full flex-col border-r bg-background transition-all duration-300 ease-in-out data-[collapsed=true]:w-16 md:flex',
+           isCollapsed ? 'w-16' : 'w-64'
+        )}
+       >
         <SidebarNavigation />
       </Sidebar>
       <SidebarMobile>
