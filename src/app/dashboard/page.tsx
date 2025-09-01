@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Sparkles, ShieldCheck, TrendingUp, CloudSun, Leaf, Info, ShieldAlert, LineChart } from 'lucide-react';
+import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart } from 'lucide-react';
 import Image from 'next/image';
 
 import { getFarmInsightsAction } from '@/app/actions';
