@@ -312,6 +312,8 @@ const getFarmInsightsSchema = z.object({
   plantingDate: z.string().min(1, 'Please enter a planting date.'),
   mandi: z.string().optional(),
   language: z.string(),
+  soilReport: z.string().optional(),
+  history: z.string().optional(),
 });
 
 export async function getFarmInsightsAction(

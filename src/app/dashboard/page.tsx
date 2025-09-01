@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon, TestTube2 } from 'lucide-react';
 import Image from 'next/image';
 
 import { getFarmInsightsAction } from '@/app/actions';
@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
@@ -38,6 +39,8 @@ const formSchema = z.object({
     required_error: "A planting date is required.",
   }),
   mandi: z.string().optional(),
+  soilReport: z.string().optional(),
+  history: z.string().optional(),
 });
 
 const getPriorityStyles = (priority: 'Low' | 'Medium' | 'High'): { variant: "default" | "secondary" | "destructive", className: string } => {
@@ -57,6 +60,7 @@ const categoryIconMap: Record<GetFarmInsightsOutput['insights'][0]['category'], 
     Disease: <ShieldAlert className="h-5 w-5" />,
     Irrigation: <Droplets className="h-5 w-5" />,
     Market: <LineChart className="h-5 w-5" />,
+    Fertilizer: <TestTube2 className="h-5 w-5" />,
     General: <Info className="h-5 w-5" />,
 }
 
@@ -73,6 +77,8 @@ export default function FarmDashboardPage() {
       crop: '',
       region: '',
       mandi: '',
+      soilReport: '',
+      history: '',
     },
   });
 
@@ -121,87 +127,115 @@ export default function FarmDashboardPage() {
                     {t('farm_dashboard_description')}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="crop"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('crop_name_label')}</FormLabel>
-                        <FormControl>
-                          <Input placeholder={t('crop_name_placeholder_yield')} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="region"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('region_label')}</FormLabel>
-                        <FormControl>
-                          <Input placeholder={t('region_placeholder')} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="crop"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('crop_name_label')}</FormLabel>
+                          <FormControl>
+                            <Input placeholder={t('crop_name_placeholder_yield')} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="region"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('region_label')}</FormLabel>
+                          <FormControl>
+                            <Input placeholder={t('region_placeholder')} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="plantingDate"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>{t('planting_date_label')}</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>{t('planting_date_placeholder')}</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date > new Date() || date < new Date("1900-01-01")
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="mandi"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('mandi_name_label')} (Optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder={t('mandi_name_placeholder')} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                    <FormField
-                    control={form.control}
-                    name="plantingDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>{t('planting_date_label')}</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "w-full pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>{t('planting_date_placeholder')}</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) =>
-                                date > new Date() || date < new Date("1900-01-01")
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                   <FormField
-                    control={form.control}
-                    name="mandi"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('mandi_name_label')} (Optional)</FormLabel>
-                        <FormControl>
-                          <Input placeholder={t('mandi_name_placeholder')} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      control={form.control}
+                      name="soilReport"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Soil Report Data (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="e.g., pH: 6.5, N: 120kg/ha, P: 50kg/ha, K: 80kg/ha" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="history"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Past Crop & Treatment History (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="e.g., Last year: Maize, yield 2.5t/acre. Applied fungicide in July." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                 </CardContent>
                 <CardFooter>
                   <Button type="submit" className="w-full sm:w-auto" disabled={isLoading}>
