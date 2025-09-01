@@ -38,7 +38,6 @@ const formSchema = z.object({
   plantingDate: z.date({
     required_error: "A planting date is required.",
   }),
-  mandi: z.string().optional(),
   soilReport: z.string().optional(),
   history: z.string().optional(),
 });
@@ -76,7 +75,6 @@ export default function FarmDashboardPage() {
     defaultValues: {
       crop: '',
       region: '',
-      mandi: '',
       soilReport: '',
       history: '',
     },
@@ -159,7 +157,7 @@ export default function FarmDashboardPage() {
                       control={form.control}
                       name="plantingDate"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col">
+                        <FormItem className="flex flex-col sm:col-span-2">
                           <FormLabel>{t('planting_date_label')}</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
@@ -192,19 +190,6 @@ export default function FarmDashboardPage() {
                               />
                             </PopoverContent>
                           </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="mandi"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('mandi_name_label')} (Optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder={t('mandi_name_placeholder')} {...field} />
-                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

@@ -25,14 +25,12 @@ const getFarmInsightsFlow = ai.defineFlow(
   },
   async (input) => {
     
-    const mandi = input.mandi || input.region;
-
     // In parallel, fetch weather, disease, and market price data.
     const [weather, disease, market] = await Promise.all([
         getWeatherForecast({location: input.region, language: input.language}),
         forecastDiseaseOutbreak({crop: input.crop, region: input.region, language: input.language}),
         // Market price is optional and might fail, so we catch errors.
-        getMarketPrice({crop: input.crop, mandi: mandi, language: input.language}).catch(() => null),
+        getMarketPrice({crop: input.crop, mandi: input.region, language: input.language}).catch(() => null),
     ]);
 
     // Construct a context string with all the fetched data for the LLM.

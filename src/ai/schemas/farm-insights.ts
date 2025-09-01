@@ -4,7 +4,6 @@ export const GetFarmInsightsInputSchema = z.object({
   crop: z.string().describe('The name of the crop.'),
   region: z.string().describe('The geographical region or state.'),
   plantingDate: z.string().describe('The date the crop was planted in YYYY-MM-DD format.'),
-  mandi: z.string().optional().describe('The optional local mandi for market price context.'),
   language: z.string().describe('The language for the response.'),
   soilReport: z.string().optional().describe('Optional text data from a soil report (e.g., NPK values, pH).'),
   history: z.string().optional().describe('Optional text describing past treatments, yields, or issues for this field.'),
