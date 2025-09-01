@@ -196,5 +196,6 @@
   "insights_placeholder_title": "Welcome to your Farm Dashboard!",
   "insights_placeholder_text": "Enter your crop and region above to get personalized, actionable insights for the week ahead.",
   "insights_placeholder_alt": "A flourishing farm",
-  "weekly_insights_title": "Your Weekly Insights"
+  "weekly_insights_title": "Your Weekly Insights",
+  "planting_date_placeholder": "Pick a date"
 }

@@ -309,6 +309,7 @@ export async function estimateCarbonCreditsAction(
 const getFarmInsightsSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
   region: z.string().min(2, 'Please enter a region.'),
+  plantingDate: z.string().min(1, 'Please enter a planting date.'),
   mandi: z.string().optional(),
   language: z.string(),
 });

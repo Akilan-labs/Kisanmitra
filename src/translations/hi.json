@@ -190,5 +190,6 @@
   "insights_placeholder_title": "आपके फार्म डैशबोर्ड में आपका स्वागत है!",
   "insights_placeholder_text": "आने वाले सप्ताह के लिए व्यक्तिगत, कार्रवाई योग्य अंतर्दृष्टि प्राप्त करने के लिए ऊपर अपनी फसल और क्षेत्र दर्ज करें।",
   "insights_placeholder_alt": "एक फलता-फूलता खेत",
-  "weekly_insights_title": "आपकी साप्ताहिक अंतर्दृष्टि"
+  "weekly_insights_title": "आपकी साप्ताहिक अंतर्दृष्टि",
+  "planting_date_placeholder": "एक तारीख चुनें"
 }

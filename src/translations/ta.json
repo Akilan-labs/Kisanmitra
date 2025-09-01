@@ -86,7 +86,7 @@
   "area_label": "பரப்பளவு (ஏக்கரில்)",
   "area_placeholder": "உ.దా., 5",
   "soil_type_label": "மண் வகை",
-  "soil_type_placeholder": "ಒಂದು ಮಣ್ಣಿನ ಪ್ರಕಾರವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+  "soil_type_placeholder": "ఒಂದು ಮಣ್ಣಿನ ಪ್ರಕಾರವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
   "annual_rainfall_label": "ஆண்டு மழை (மிமீ)",
   "annual_rainfall_placeholder": "உ.దా., 1200",
   "region_label": "பிராந்தியம்/மாநிலம்",
@@ -190,5 +190,6 @@
   "insights_placeholder_title": "உங்கள் பண்ணை டாஷ்போர்டுக்கு வரவேற்கிறோம்!",
   "insights_placeholder_text": "வரவிருக்கும் வாரத்திற்கான தனிப்பயனாக்கப்பட்ட, செயல்படக்கூடிய நுண்ணறிவுகளைப் பெற மேலே உங்கள் பயிர் மற்றும் பிராந்தியத்தை உள்ளிடவும்.",
   "insights_placeholder_alt": "ஒரு செழிப்பான பண்ணை",
-  "weekly_insights_title": "உங்கள் வாராந்திர நுண்ணறிவுகள்"
+  "weekly_insights_title": "உங்கள் வாராந்திர நுண்ணறிவுகள்",
+  "planting_date_placeholder": "ஒரு தேதியைத் தேர்ந்தெடுக்கவும்"
 }

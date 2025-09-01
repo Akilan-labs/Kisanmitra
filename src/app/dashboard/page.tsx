@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets } from 'lucide-react';
+import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon } from 'lucide-react';
 import Image from 'next/image';
 
 import { getFarmInsightsAction } from '@/app/actions';
@@ -27,10 +27,16 @@ import { useTranslation } from '@/hooks/use-translation';
 import { useLanguage } from '@/hooks/use-language';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
   region: z.string().min(2, 'Please enter a region.'),
+  plantingDate: z.date({
+    required_error: "A planting date is required.",
+  }),
   mandi: z.string().optional(),
 });
 
@@ -74,7 +80,11 @@ export default function FarmDashboardPage() {
     setIsLoading(true);
     setResult(null);
     try {
-      const response = await getFarmInsightsAction({ ...values, language });
+      const response = await getFarmInsightsAction({ 
+        ...values,
+        plantingDate: format(values.plantingDate, 'yyyy-MM-dd'),
+        language 
+      });
       if (response.success) {
         setResult(response.data);
       } else {
@@ -111,7 +121,7 @@ export default function FarmDashboardPage() {
                     {t('farm_dashboard_description')}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="crop"
@@ -134,6 +144,47 @@ export default function FarmDashboardPage() {
                         <FormControl>
                           <Input placeholder={t('region_placeholder')} {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name="plantingDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>{t('planting_date_label')}</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>{t('planting_date_placeholder')}</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() || date < new Date("1900-01-01")
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
                         <FormMessage />
                       </FormItem>
                     )}

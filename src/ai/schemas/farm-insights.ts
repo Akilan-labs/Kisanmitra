@@ -3,6 +3,7 @@ import {z} from 'genkit';
 export const GetFarmInsightsInputSchema = z.object({
   crop: z.string().describe('The name of the crop.'),
   region: z.string().describe('The geographical region or state.'),
+  plantingDate: z.string().describe('The date the crop was planted in YYYY-MM-DD format.'),
   mandi: z.string().optional().describe('The optional local mandi for market price context.'),
   language: z.string().describe('The language for the response.'),
 });
