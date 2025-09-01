@@ -31,6 +31,7 @@ import { cn } from '@/lib/utils';
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
   region: z.string().min(2, 'Please enter a region.'),
+  mandi: z.string().optional(),
 });
 
 const getPriorityStyles = (priority: 'Low' | 'Medium' | 'High'): { variant: "default" | "secondary" | "destructive", className: string } => {
@@ -65,6 +66,7 @@ export default function FarmDashboardPage() {
     defaultValues: {
       crop: '',
       region: '',
+      mandi: '',
     },
   });
 
@@ -109,7 +111,7 @@ export default function FarmDashboardPage() {
                     {t('farm_dashboard_description')}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <FormField
                     control={form.control}
                     name="crop"
@@ -131,6 +133,19 @@ export default function FarmDashboardPage() {
                         <FormLabel>{t('region_label')}</FormLabel>
                         <FormControl>
                           <Input placeholder={t('region_placeholder')} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name="mandi"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('mandi_name_label')} (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t('mandi_name_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
