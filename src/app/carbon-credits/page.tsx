@@ -410,7 +410,7 @@ export default function CarbonCreditsPage() {
               {!isLoading && !result && (
                 <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
                   <Image
-                    src="https://placehold.co/600x400.png"
+                    src="https://picsum.photos/600/400"
                     alt={t('carbon_credits_placeholder_alt')}
                     data-ai-hint="trees nature"
                     width={300}
