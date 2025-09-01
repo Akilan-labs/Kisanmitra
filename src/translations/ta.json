@@ -8,6 +8,8 @@
   "weather_forecast_title": "வானிலை முன்னறிவிப்பு",
   "disease_outbreak_forecast_title": "நோய் பரவல் முன்னறிவிப்பு",
   "carbon_credits_title": "கார்பன் கிரெடிட்கள்",
+  "dashboard_title": "பண்ணை டாஷ்போர்டு",
+  "sidebar_dashboard": "டாஷ்போர்டு",
   "sidebar_crop_disease": "பயிர் நோய்",
   "sidebar_market_prices": "சந்தை விலைகள்",
   "sidebar_govt_schemes": "அரசு திட்டங்கள்",
@@ -180,5 +182,13 @@
   "next_steps_label": "அடுத்த படிகள்",
   "carbon_credits_placeholder_alt": "பச்சை இலைகள் மற்றும் மரங்கள்",
   "carbon_credits_placeholder_text": "உங்கள் கார்பன் கிரெடிட் மதிப்பீடு இங்கே தோன்றும்.",
-  "estimation_failed_title": "மதிப்பீடு தோல்வியடைந்தது"
+  "estimation_failed_title": "மதிப்பீடு தோல்வியடைந்தது",
+  "farm_dashboard_title": "உங்கள் பண்ணை டாஷ்போர்டு",
+  "farm_dashboard_description": "உங்கள் பண்ணைக்கான தனிப்பயனாக்கப்பட்ட நுண்ணறிவுகளைப் பெற உங்கள் முதன்மை பயிர் மற்றும் பிராந்தியத்தை உள்ளிடவும்.",
+  "get_insights_button": "நுண்ணறிவுகளைப் பெறுங்கள்",
+  "getting_insights_button": "நுண்ணறிவுகள் பெறப்படுகின்றன...",
+  "insights_placeholder_title": "உங்கள் பண்ணை டாஷ்போர்டுக்கு வரவேற்கிறோம்!",
+  "insights_placeholder_text": "வரவிருக்கும் வாரத்திற்கான தனிப்பயனாக்கப்பட்ட, செயல்படக்கூடிய நுண்ணறிவுகளைப் பெற மேலே உங்கள் பயிர் மற்றும் பிராந்தியத்தை உள்ளிடவும்.",
+  "insights_placeholder_alt": "ஒரு செழிப்பான பண்ணை",
+  "weekly_insights_title": "உங்கள் வாராந்திர நுண்ணறிவுகள்"
 }

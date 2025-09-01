@@ -8,6 +8,8 @@
   "weather_forecast_title": "Weather Forecast",
   "disease_outbreak_forecast_title": "Disease Outbreak Forecast",
   "carbon_credits_title": "Carbon Credits",
+  "dashboard_title": "Farm Dashboard",
+  "sidebar_dashboard": "Dashboard",
   "sidebar_crop_disease": "Crop Disease",
   "sidebar_market_prices": "Market Prices",
   "sidebar_govt_schemes": "Govt. Schemes",
@@ -186,5 +188,13 @@
   "next_steps_label": "Next Steps",
   "carbon_credits_placeholder_alt": "Green leaves and trees",
   "carbon_credits_placeholder_text": "Your carbon credit estimation will appear here.",
-  "estimation_failed_title": "Estimation Failed"
+  "estimation_failed_title": "Estimation Failed",
+  "farm_dashboard_title": "Your Farm Dashboard",
+  "farm_dashboard_description": "Enter your primary crop and region to get personalized insights for your farm.",
+  "get_insights_button": "Get Insights",
+  "getting_insights_button": "Getting Insights...",
+  "insights_placeholder_title": "Welcome to your Farm Dashboard!",
+  "insights_placeholder_text": "Enter your crop and region above to get personalized, actionable insights for the week ahead.",
+  "insights_placeholder_alt": "A flourishing farm",
+  "weekly_insights_title": "Your Weekly Insights"
 }

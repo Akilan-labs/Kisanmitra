@@ -8,6 +8,8 @@
   "weather_forecast_title": "ಹವಾಮಾನ ಮುನ್ಸೂಚನೆ",
   "disease_outbreak_forecast_title": "ರೋಗದ ಹರಡುವಿಕೆ ಮುನ್ಸೂಚನೆ",
   "carbon_credits_title": "ಕಾರ್ಬನ್ ಕ್ರೆಡಿಟ್‌ಗಳು",
+  "dashboard_title": "ಫಾರ್ಮ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+  "sidebar_dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
   "sidebar_crop_disease": "ಬೆಳೆ ರೋಗ",
   "sidebar_market_prices": "ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು",
   "sidebar_govt_schemes": "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು",
@@ -180,5 +182,13 @@
   "next_steps_label": "ಮುಂದಿನ ಹಂತಗಳು",
   "carbon_credits_placeholder_alt": "ಹಸಿರು ಎಲೆಗಳು ಮತ್ತು ಮರಗಳು",
   "carbon_credits_placeholder_text": "ನಿಮ್ಮ ಕಾರ್ಬನ್ ಕ್ರೆಡಿಟ್ ಅಂದಾಜು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ.",
-  "estimation_failed_title": "ಅಂದಾಜು ವಿಫಲವಾಗಿದೆ"
+  "estimation_failed_title": "ಅಂದಾಜು ವಿಫಲವಾಗಿದೆ",
+  "farm_dashboard_title": "ನಿಮ್ಮ ಫಾರ್ಮ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+  "farm_dashboard_description": "ನಿಮ್ಮ ಫಾರ್ಮ್‌ಗಾಗಿ ವೈಯಕ್ತೀಕರಿಸಿದ ಒಳನೋಟಗಳನ್ನು ಪಡೆಯಲು ನಿಮ್ಮ ಪ್ರಾಥಮಿಕ ಬೆಳೆ ಮತ್ತು ಪ್ರದೇಶವನ್ನು ನಮೂದಿಸಿ.",
+  "get_insights_button": "ಒಳನೋಟಗಳನ್ನು ಪಡೆಯಿರಿ",
+  "getting_insights_button": "ಒಳನೋಟಗಳನ್ನು ಪಡೆಯಲಾಗುತ್ತಿದೆ...",
+  "insights_placeholder_title": "ನಿಮ್ಮ ಫಾರ್ಮ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಸುಸ್ವಾಗತ!",
+  "insights_placeholder_text": "ಮುಂದಿನ ವಾರಕ್ಕೆ ವೈಯಕ್ತೀಕರಿಸಿದ, ಕ್ರಮಬದ್ಧವಾದ ಒಳನೋಟಗಳನ್ನು ಪಡೆಯಲು ಮೇಲೆ ನಿಮ್ಮ ಬೆಳೆ ಮತ್ತು ಪ್ರದೇಶವನ್ನು ನಮೂದಿಸಿ.",
+  "insights_placeholder_alt": "ಒಂದು ಸಮೃದ್ಧ ಫಾರ್ಮ್",
+  "weekly_insights_title": "ನಿಮ್ಮ ಸಾಪ್ತಾಹಿಕ ಒಳನೋಟಗಳು"
 }

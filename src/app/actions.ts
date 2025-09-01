@@ -54,6 +54,13 @@ import {
     EstimateCarbonCreditsInput,
     EstimateCarbonCreditsOutput
 } from '@/ai/schemas/carbon-credits';
+import {
+    getFarmInsights,
+} from '@/ai/flows/get-farm-insights';
+import {
+    GetFarmInsightsInput,
+    GetFarmInsightsOutput
+} from '@/ai/schemas/farm-insights';
 
 
 const diagnoseCropDiseaseSchema = z.object({
@@ -296,5 +303,28 @@ export async function estimateCarbonCreditsAction(
     } catch (error) {
         console.error(error);
         return { success: false, error: 'An unexpected error occurred during carbon credit estimation. Please try again.' };
+    }
+}
+
+const getFarmInsightsSchema = z.object({
+  crop: z.string().min(2, 'Please enter a crop name.'),
+  region: z.string().min(2, 'Please enter a region.'),
+  language: z.string(),
+});
+
+export async function getFarmInsightsAction(
+  input: GetFarmInsightsInput
+): Promise<{ success: true; data: GetFarmInsightsOutput } | { success: false; error: string }> {
+    const parsed = getFarmInsightsSchema.safeParse(input);
+    if (!parsed.success) {
+        const errorMessage = Object.values(parsed.error.flatten().fieldErrors).flat()[0] ?? 'Invalid input. Please check the form and try again.';
+        return { success: false, error: errorMessage };
+    }
+    try {
+        const result = await getFarmInsights(parsed.data);
+        return { success: true, data: result };
+    } catch (error) {
+        console.error(error);
+        return { success: false, error: 'An unexpected error occurred while generating insights. Please try again.' };
     }
 }

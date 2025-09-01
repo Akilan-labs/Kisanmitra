@@ -8,6 +8,8 @@
   "weather_forecast_title": "मौसम पूर्वानुमान",
   "disease_outbreak_forecast_title": "रोग प्रकोप पूर्वानुमान",
   "carbon_credits_title": "कार्बन क्रेडिट",
+  "dashboard_title": "फार्म डैशबोर्ड",
+  "sidebar_dashboard": "डैशबोर्ड",
   "sidebar_crop_disease": "फ़सल रोग",
   "sidebar_market_prices": "बाज़ार मूल्य",
   "sidebar_govt_schemes": "सरकारी योजनाएं",
@@ -180,5 +182,13 @@
   "next_steps_label": "अगले कदम",
   "carbon_credits_placeholder_alt": "हरे पत्ते और पेड़",
   "carbon_credits_placeholder_text": "आपका कार्बन क्रेडिट अनुमान यहाँ दिखाई देगा।",
-  "estimation_failed_title": "अनुमान विफल"
+  "estimation_failed_title": "अनुमान विफल",
+  "farm_dashboard_title": "आपका फार्म डैशबोर्ड",
+  "farm_dashboard_description": "अपने खेत के लिए व्यक्तिगत जानकारी प्राप्त करने के लिए अपनी प्राथमिक फसल और क्षेत्र दर्ज करें।",
+  "get_insights_button": "अंतर्दृष्टि प्राप्त करें",
+  "getting_insights_button": "अंतर्दृष्टि प्राप्त हो रही है...",
+  "insights_placeholder_title": "आपके फार्म डैशबोर्ड में आपका स्वागत है!",
+  "insights_placeholder_text": "आने वाले सप्ताह के लिए व्यक्तिगत, कार्रवाई योग्य अंतर्दृष्टि प्राप्त करने के लिए ऊपर अपनी फसल और क्षेत्र दर्ज करें।",
+  "insights_placeholder_alt": "एक फलता-फूलता खेत",
+  "weekly_insights_title": "आपकी साप्ताहिक अंतर्दृष्टि"
 }
