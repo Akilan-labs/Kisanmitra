@@ -1,4 +1,3 @@
-
 'use server';
 
 import { z } from 'zod';
@@ -309,6 +308,7 @@ export async function estimateCarbonCreditsAction(
 const getFarmInsightsSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
   region: z.string().min(2, 'Please enter a region.'),
+  mandi: z.string().optional(),
   language: z.string(),
 });
 

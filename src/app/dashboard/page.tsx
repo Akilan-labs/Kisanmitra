@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Sparkles, ShieldCheck, AlertTriangle, CloudSun, Leaf, Info } from 'lucide-react';
+import { Loader2, Sparkles, ShieldCheck, TrendingUp, CloudSun, Leaf, Info, ShieldAlert, LineChart } from 'lucide-react';
 import Image from 'next/image';
 
 import { getFarmInsightsAction } from '@/app/actions';
@@ -23,7 +22,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/page-header';
 import { LanguageSwitcher } from '@/components/language-switcher';
-import type { GetFarmInsightsOutput } from '@/ai/flows/get-farm-insights';
+import type { GetFarmInsightsOutput } from '@/ai/schemas/farm-insights';
 import { useTranslation } from '@/hooks/use-translation';
 import { useLanguage } from '@/hooks/use-language';
 import { Badge } from '@/components/ui/badge';
@@ -47,9 +46,9 @@ const getPriorityVariant = (priority: 'Low' | 'Medium' | 'High'): "default" | "s
 
 const categoryIconMap = {
     Weather: <CloudSun className="h-5 w-5" />,
-    Disease: <ShieldCheck className="h-5 w-5" />,
+    Disease: <ShieldAlert className="h-5 w-5" />,
     Irrigation: <Leaf className="h-5 w-5" />,
-    Market: <AlertTriangle className="h-5 w-5" />,
+    Market: <LineChart className="h-5 w-5" />,
     General: <Info className="h-5 w-5" />,
 }
 
@@ -169,15 +168,20 @@ export default function FarmDashboardPage() {
                                 {categoryIconMap[insight.category]}
                             </div>
                             <div className="flex-1">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center justify-between">
                                     <h3 className="font-semibold font-headline">{insight.title}</h3>
                                     <Badge variant={getPriorityVariant(insight.priority)}>{insight.priority}</Badge>
                                 </div>
                                 <p className="text-sm text-muted-foreground">{insight.recommendation}</p>
+                                <p className="text-xs text-muted-foreground/80 mt-1">Source: {insight.source}</p>
                             </div>
                         </Card>
                     )) : (
-                        <p className="text-muted-foreground">No specific insights for this week. Things look good!</p>
+                        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-center text-muted-foreground">
+                          <ShieldCheck className="h-12 w-12 text-green-500"/>
+                          <h3 className="mt-4 text-lg font-semibold">All Clear!</h3>
+                          <p className="mt-1 text-sm">No critical alerts for your farm this week. Keep up the great work!</p>
+                        </div>
                     )}
                 </CardContent>
              </Card>
@@ -185,7 +189,7 @@ export default function FarmDashboardPage() {
 
           {!isLoading && !result && (
               <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-24 text-center text-muted-foreground">
-                <Image src="https://placehold.co/600x400.png" alt={t('insights_placeholder_alt')} data-ai-hint="farm landscape" width={300} height={200} className="rounded-lg opacity-50"/>
+                <Image src="https://picsum.photos/600/400" alt={t('insights_placeholder_alt')} data-ai-hint="farm landscape" width={300} height={200} className="rounded-lg opacity-50"/>
                 <h2 className="mt-6 text-xl font-semibold font-headline">{t('insights_placeholder_title')}</h2>
                 <p className="mt-2 max-w-sm">{t('insights_placeholder_text')}</p>
               </div>
