@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart } from 'lucide-react';
+import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets } from 'lucide-react';
 import Image from 'next/image';
 
 import { getFarmInsightsAction } from '@/app/actions';
@@ -48,7 +48,7 @@ const getPriorityStyles = (priority: 'Low' | 'Medium' | 'High'): { variant: "def
 const categoryIconMap: Record<GetFarmInsightsOutput['insights'][0]['category'], React.ReactNode> = {
     Weather: <CloudSun className="h-5 w-5" />,
     Disease: <ShieldAlert className="h-5 w-5" />,
-    Irrigation: <Leaf className="h-5 w-5" />,
+    Irrigation: <Droplets className="h-5 w-5" />,
     Market: <LineChart className="h-5 w-5" />,
     General: <Info className="h-5 w-5" />,
 }
