@@ -26,25 +26,26 @@ import type { GetFarmInsightsOutput } from '@/ai/schemas/farm-insights';
 import { useTranslation } from '@/hooks/use-translation';
 import { useLanguage } from '@/hooks/use-language';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
   region: z.string().min(2, 'Please enter a region.'),
 });
 
-const getPriorityVariant = (priority: 'Low' | 'Medium' | 'High'): "default" | "secondary" | "destructive" => {
+const getPriorityStyles = (priority: 'Low' | 'Medium' | 'High'): { variant: "default" | "secondary" | "destructive", className: string } => {
     switch (priority) {
         case 'High':
-            return 'destructive';
+            return { variant: 'destructive', className: 'border-destructive/50' };
         case 'Medium':
-            return 'secondary';
+            return { variant: 'secondary', className: 'border-yellow-500/50' };
         case 'Low':
         default:
-            return 'default';
+            return { variant: 'default', className: 'border-primary/20' };
     }
 }
 
-const categoryIconMap = {
+const categoryIconMap: Record<GetFarmInsightsOutput['insights'][0]['category'], React.ReactNode> = {
     Weather: <CloudSun className="h-5 w-5" />,
     Disease: <ShieldAlert className="h-5 w-5" />,
     Irrigation: <Leaf className="h-5 w-5" />,
@@ -53,7 +54,7 @@ const categoryIconMap = {
 }
 
 export default function FarmDashboardPage() {
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<GetFarmInsightsOutput | null>(null);
   const { toast } = useToast();
@@ -162,21 +163,24 @@ export default function FarmDashboardPage() {
                     <CardTitle>{t('weekly_insights_title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {result.insights.length > 0 ? result.insights.map((insight, index) => (
-                        <Card key={index} className="flex items-start gap-4 p-4">
+                    {result.insights.length > 0 ? result.insights.map((insight, index) => {
+                      const priorityStyles = getPriorityStyles(insight.priority);
+                      return (
+                        <Card key={index} className={cn("flex items-start gap-4 p-4 border-l-4", priorityStyles.className)}>
                             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                                 {categoryIconMap[insight.category]}
                             </div>
                             <div className="flex-1">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="font-semibold font-headline">{insight.title}</h3>
-                                    <Badge variant={getPriorityVariant(insight.priority)}>{insight.priority}</Badge>
+                                    <h3 className="font-semibold font-headline text-lg">{insight.title}</h3>
+                                    <Badge variant={priorityStyles.variant}>{insight.priority}</Badge>
                                 </div>
-                                <p className="text-sm text-muted-foreground">{insight.recommendation}</p>
-                                <p className="text-xs text-muted-foreground/80 mt-1">Source: {insight.source}</p>
+                                <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{insight.recommendation}</p>
+                                <p className="text-xs text-muted-foreground/80 mt-2">Source: {insight.source}</p>
                             </div>
                         </Card>
-                    )) : (
+                      )
+                    }) : (
                         <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-center text-muted-foreground">
                           <ShieldCheck className="h-12 w-12 text-green-500"/>
                           <h3 className="mt-4 text-lg font-semibold">All Clear!</h3>

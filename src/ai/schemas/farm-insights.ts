@@ -12,7 +12,7 @@ const InsightSchema = z.object({
   priority: z.enum(['High', 'Medium', 'Low']).describe('The priority level of the insight.'),
   category: z.enum(['Weather', 'Disease', 'Irrigation', 'Market', 'General']).describe('The category of the insight.'),
   title: z.string().describe('A short, clear title for the insight (e.g., "Heavy Rain Expected", "High Risk of Blight").'),
-  recommendation: z.string().describe('A concise, actionable recommendation for the farmer.'),
+  recommendation: z.string().describe('A concise, actionable recommendation for the farmer, including the rationale.'),
   source: z.string().describe('The primary data source for the insight (e.g., "Weather Forecast", "Disease Risk Model", "Market Analysis").'),
 });
 
