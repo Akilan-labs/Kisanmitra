@@ -8,7 +8,7 @@ import { PanelLeft } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
   Tooltip,
   TooltipContent,
@@ -97,6 +97,7 @@ export const Sidebar = React.forwardRef<
   return (
     <aside
       ref={ref}
+      data-collapsed={isCollapsed}
       className={cn(
         'group fixed inset-y-0 left-0 z-10 hidden h-svh flex-col border-r bg-background transition-[width] duration-200 ease-in-out md:flex',
         isCollapsed ? 'w-16' : 'w-64',
@@ -143,6 +144,9 @@ export const SidebarMobile = ({ children }: { children: React.ReactNode }) => {
             </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
+          <SheetHeader className="p-0">
+            <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+          </SheetHeader>
           <div className="flex h-full flex-col">
             {children}
           </div>
