@@ -311,7 +311,7 @@ export default function DiseaseDiagnosisPage() {
                              <BarChart className="h-4 w-4 text-muted-foreground" />
                           </CardHeader>
                           <CardContent>
-                            <Badge variant={result.severity.toLowerCase() === 'high' || result.severity.toLowerCase() === 'very high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'} className="text-base">{result.severity}</Badge>
+                            <Badge variant={result.severity.toLowerCase() === 'high' ? 'destructive' : result.severity.toLowerCase() === 'medium' ? 'secondary' : 'default'} className="text-base">{result.severity}</Badge>
                           </CardContent>
                         </Card>
 
