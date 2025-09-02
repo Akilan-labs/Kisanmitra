@@ -62,8 +62,10 @@ export function SidebarProvider({
   defaultCollapsed?: boolean;
 }) {
   const [isCollapsed, setCollapsed] = React.useState(defaultCollapsed ?? false);
+  const [isMounted, setIsMounted] = React.useState(false);
 
   React.useEffect(() => {
+    setIsMounted(true);
     const cookieValue = document.cookie
       .split('; ')
       .find((row) => row.startsWith('sidebar-collapsed='))
@@ -74,8 +76,10 @@ export function SidebarProvider({
   }, []);
 
   React.useEffect(() => {
-    document.cookie = `sidebar-collapsed=${isCollapsed}; path=/; max-age=604800`;
-  }, [isCollapsed]);
+    if (isMounted) {
+      document.cookie = `sidebar-collapsed=${isCollapsed}; path=/; max-age=604800`;
+    }
+  }, [isCollapsed, isMounted]);
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -144,7 +148,7 @@ export const SidebarMobile = ({ children }: { children: React.ReactNode }) => {
             </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
-          <SheetHeader className="p-0">
+          <SheetHeader>
             <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
           </SheetHeader>
           <div className="flex h-full flex-col">
