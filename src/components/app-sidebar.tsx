@@ -72,7 +72,7 @@ function SidebarNavigation() {
 }
 
 export function AppSidebar() {
-    const { isCollapsed, isMounted } = useSidebar();
+    const { isMounted } = useSidebar();
 
     if (!isMounted) {
         return null;
@@ -80,12 +80,7 @@ export function AppSidebar() {
 
   return (
     <>
-       <Sidebar
-        className={cn(
-          'group fixed inset-y-0 left-0 z-20 hidden h-full flex-col border-r bg-background transition-all duration-300 ease-in-out data-[collapsed=true]:w-16 md:flex',
-           isCollapsed ? 'w-16' : 'w-64'
-        )}
-       >
+       <Sidebar>
         <SidebarNavigation />
       </Sidebar>
       <SidebarMobile>

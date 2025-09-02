@@ -164,14 +164,14 @@ export const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { isCollapsed } = useSidebar();
+  const { isCollapsed, isMounted } = useSidebar();
   return (
     <main
       ref={ref}
       className={cn(
         "flex-1 transition-[margin-left] duration-200 ease-in-out",
-        'md:ml-64 group-[[data-collapsed=true]]:md:ml-16',
-        isCollapsed ? 'md:ml-16' : 'md:ml-64',
+        'md:ml-64',
+        isMounted && (isCollapsed ? 'md:ml-16' : 'md:ml-64'),
         className
       )}
       {...props}
