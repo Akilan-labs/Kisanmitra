@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -71,7 +72,12 @@ function SidebarNavigation() {
 }
 
 export function AppSidebar() {
-    const { isCollapsed } = useSidebar();
+    const { isCollapsed, isMounted } = useSidebar();
+
+    if (!isMounted) {
+        return null;
+    }
+
   return (
     <>
        <Sidebar

@@ -42,6 +42,7 @@ const sidebarMenuButtonVariants = cva(
 type SidebarContextValue = {
   isCollapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  isMounted: boolean;
 };
 
 const SidebarContext = React.createContext<SidebarContextValue | null>(null);
@@ -83,7 +84,7 @@ export function SidebarProvider({
 
   return (
     <TooltipProvider delayDuration={0}>
-      <SidebarContext.Provider value={{ isCollapsed, setCollapsed }}>
+      <SidebarContext.Provider value={{ isCollapsed, setCollapsed, isMounted }}>
         {children}
       </SidebarContext.Provider>
     </TooltipProvider>
@@ -103,8 +104,8 @@ export const Sidebar = React.forwardRef<
       ref={ref}
       data-collapsed={isCollapsed}
       className={cn(
-        'group fixed inset-y-0 left-0 z-10 hidden h-svh flex-col border-r bg-background transition-[width] duration-200 ease-in-out md:flex',
-        isCollapsed ? 'w-16' : 'w-64',
+        'group fixed inset-y-0 left-0 z-20 hidden h-full flex-col border-r bg-background transition-all duration-300 ease-in-out data-[collapsed=true]:w-16 md:flex',
+         isCollapsed ? 'w-16' : 'w-64',
         className
       )}
       {...props}
@@ -148,7 +149,7 @@ export const SidebarMobile = ({ children }: { children: React.ReactNode }) => {
             </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
-          <SheetHeader>
+           <SheetHeader className="p-3">
             <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
           </SheetHeader>
           <div className="flex h-full flex-col">
