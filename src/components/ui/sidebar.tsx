@@ -149,8 +149,8 @@ export const SidebarMobile = ({ children }: { children: React.ReactNode }) => {
             </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
-           <SheetHeader className="p-3">
-            <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+          <SheetHeader className="p-3">
+              <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
           </SheetHeader>
           <div className="flex h-full flex-col">
             {children}
