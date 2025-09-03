@@ -13,3 +13,4 @@ import '@/ai/flows/get-weather-forecast.ts';
 import '@/ai/flows/forecast-disease-outbreak.ts';
 import '@/ai/flows/estimate-carbon-credits.ts';
 import '@/ai/flows/get-farm-insights.ts';
+import '@/ai/schemas/diagnose-crop-disease.ts';

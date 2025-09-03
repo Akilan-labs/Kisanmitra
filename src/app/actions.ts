@@ -4,9 +4,6 @@
 import { z } from 'zod';
 import {
   diagnoseCropDisease,
-  type DiagnoseCropDiseaseInput,
-  type DiagnoseCropDiseaseOutput,
-  DiagnoseCropDiseaseInputSchema,
 } from '@/ai/flows/diagnose-crop-disease';
 import {
   findGovernmentSchemes,
@@ -62,6 +59,8 @@ import {
     GetFarmInsightsInput,
     GetFarmInsightsOutput
 } from '@/ai/schemas/farm-insights';
+import type { DiagnoseCropDiseaseInput, DiagnoseCropDiseaseOutput } from '@/ai/schemas/diagnose-crop-disease';
+import { DiagnoseCropDiseaseInputSchema } from '@/ai/schemas/diagnose-crop-disease';
 
 
 export async function diagnoseCropDiseaseAction(
@@ -190,7 +189,8 @@ export async function predictYieldAction(
   try {
     const result = await predictYield(parsed.data);
     return { success: true, data: result };
-  } catch (error) {
+  } catch (error)
+ {
     console.error(error);
     return { success: false, error: 'An unexpected error occurred during yield prediction. Please try again.' };
   }
