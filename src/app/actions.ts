@@ -6,6 +6,7 @@ import {
   diagnoseCropDisease,
   type DiagnoseCropDiseaseInput,
   type DiagnoseCropDiseaseOutput,
+  DiagnoseCropDiseaseInputSchema,
 } from '@/ai/flows/diagnose-crop-disease';
 import {
   findGovernmentSchemes,
@@ -63,15 +64,10 @@ import {
 } from '@/ai/schemas/farm-insights';
 
 
-const diagnoseCropDiseaseSchema = z.object({
-  photoDataUri: z.string().min(1, 'Image is required.'),
-  language: z.string(),
-});
-
 export async function diagnoseCropDiseaseAction(
   input: DiagnoseCropDiseaseInput
 ): Promise<{ success: true; data: DiagnoseCropDiseaseOutput } | { success: false; error: string }> {
-  const parsed = diagnoseCropDiseaseSchema.safeParse(input);
+  const parsed = DiagnoseCropDiseaseInputSchema.safeParse(input);
   if (!parsed.success) {
     const errorMessage = parsed.error.flatten().fieldErrors.photoDataUri?.[0] ?? 'Invalid input.';
     return { success: false, error: errorMessage };
@@ -331,5 +327,3 @@ export async function getFarmInsightsAction(
         return { success: false, error: 'An unexpected error occurred while generating insights. Please try again.' };
     }
 }
-
-    
