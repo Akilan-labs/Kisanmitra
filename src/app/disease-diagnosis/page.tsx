@@ -20,7 +20,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/page-header';
 import { LanguageSwitcher } from '@/components/language-switcher';
-import type { DiagnoseCropDiseaseOutput } from '@/ai/flows/diagnose-crop-disease';
+import type { DiagnoseCropDiseaseOutput } from '@/ai/schemas/diagnose-crop-disease';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useTranslation } from '@/hooks/use-translation';
@@ -53,36 +53,31 @@ export default function DiseaseDiagnosisPage() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   useEffect(() => {
-    const getCameraPermission = async () => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setHasCameraPermission(false);
-        return;
-      }
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({video: true});
-        setHasCameraPermission(true);
-        stream.getTracks().forEach(track => track.stop());
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-        setHasCameraPermission(false);
-      }
-    };
-    getCameraPermission();
+    // Check for camera permissions on mount
+    navigator.mediaDevices?.enumerateDevices()
+      .then(devices => {
+        const hasCamera = devices.some(device => device.kind === 'videoinput');
+        setHasCameraPermission(hasCamera);
+      })
+      .catch(() => setHasCameraPermission(false));
   }, []);
 
   const startVideoStream = async () => {
-    if (videoRef.current && hasCameraPermission) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        videoRef.current.srcObject = stream;
-        setIsCameraOpen(true);
-      } catch (err) {
-        toast({
-          variant: 'destructive',
-          title: t('camera_error_title'),
-          description: t('camera_error_description'),
-        });
-      }
+    if (videoRef.current) {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            videoRef.current.srcObject = stream;
+            setIsCameraOpen(true);
+            setHasCameraPermission(true);
+        } catch (err) {
+            console.error(err);
+            setHasCameraPermission(false);
+            toast({
+                variant: 'destructive',
+                title: t('camera_error_title'),
+                description: t('camera_error_description'),
+            });
+        }
     }
   };
 
@@ -245,7 +240,7 @@ export default function DiseaseDiagnosisPage() {
                           <FileImage className="mr-2 h-4 w-4" />
                           {imagePreview ? t('change_image_button') : t('upload_image_button')}
                         </Button>
-                        <Button type="button" className="w-full" onClick={handleCameraOpen} disabled={!hasCameraPermission}>
+                        <Button type="button" className="w-full" onClick={handleCameraOpen} disabled={hasCameraPermission === false}>
                           <Camera className="mr-2 h-4 w-4" />
                           {t('use_camera_button')}
                         </Button>
