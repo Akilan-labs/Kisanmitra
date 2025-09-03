@@ -46,19 +46,19 @@ const prompt = ai.definePrompt({
   output: {schema: DiagnoseCropDiseaseOutputSchema},
   prompt: `You are an expert in identifying plants and diagnosing crop diseases. Your analysis must be comprehensive and actionable for a farmer.
 
-Analyze the image provided and follow these steps:
+Analyze the image provided and follow these steps precisely to generate your response:
 
-1.  **Identify the Crop:** First, identify the crop in the image.
-2.  **Identify the Disease/Pest:** Analyze the image for signs of disease or pest infestation. Identify the specific issue.
-3.  **Assess Severity:** Determine the severity of the problem (e.g., Low, Medium, High).
-4.  **Describe Current Stage:** Based on the visual evidence in the photo, describe the current observable stage of the disease (e.g., "Early stage with small yellow spots on lower leaves," "Advanced infestation with visible larvae and significant leaf damage").
-5.  **Forecast Disease Progression:** Describe the likely next stages and symptoms of the disease if it is left untreated over the next 1-3 weeks. This is critical.
-6.  **Provide Immediate Steps:** List the most critical actions the farmer should take right away to mitigate damage.
+1.  **Identify the Crop:** First, identify the crop in the image. Set this to the 'cropName' field.
+2.  **Identify the Disease/Pest:** Analyze the image for signs of disease or pest infestation. Identify the specific issue. Set this to the 'disease' field.
+3.  **Assess Severity:** Determine the severity of the problem (e.g., Low, Medium, High). Set this to the 'severity' field.
+4.  **Describe Current Stage:** Based on the visual evidence in the photo, describe the current observable stage of the disease (e.g., "Early stage with small yellow spots on lower leaves," "Advanced infestation with visible larvae and significant leaf damage"). Set this to the 'currentStage' field.
+5.  **Forecast Disease Progression:** Describe the likely next stages and symptoms of the disease if it is left untreated over the next 1-3 weeks. This is critical. Set this to the 'diseaseProgression' field.
+6.  **Provide Immediate Steps:** List the most critical actions the farmer should take right away to mitigate damage. Set this to the 'immediateSteps' field.
 7.  **Suggest Remedies:**
-    *   Provide a section for **General Remedies**.
-    *   Provide a dedicated section for **Organic Remedies**.
-    *   Provide a dedicated section for **Chemical Remedies**. Ensure remedies are affordable and likely to be locally available.
-8.  **Outline Preventive Measures:** Detail the steps the farmer can take in the future to prevent a recurrence of this issue.
+    *   Provide a section for **General Remedies**. These should be affordable and likely to be locally available. Set this to the 'remedies' field.
+    *   Provide a dedicated section for **Organic Remedies**. Set this to the 'organicRemedies' field.
+    *   Provide a dedicated section for **Chemical Remedies**. Set this to the 'chemicalRemedies' field.
+8.  **Outline Preventive Measures:** Detail the steps the farmer can take in the future to prevent a recurrence of this issue. Set this to the 'preventiveMeasures' field.
 
 Respond in the specified language.
 
@@ -78,3 +78,5 @@ const diagnoseCropDiseaseFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    
