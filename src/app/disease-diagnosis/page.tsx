@@ -47,57 +47,49 @@ export default function DiseaseDiagnosisPage() {
   const { toast } = useToast();
   const { t } = useTranslation(language);
 
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean>(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
    useEffect(() => {
-    // Check for camera permissions on mount more reliably
-    if (navigator.permissions) {
-        navigator.permissions.query({ name: 'camera' as PermissionName }).then((permissionStatus) => {
-            setHasCameraPermission(permissionStatus.state !== 'denied');
-            permissionStatus.onchange = () => {
-                setHasCameraPermission(permissionStatus.state !== 'denied');
-            };
-        });
-    } else {
-        // Fallback for older browsers
-        navigator.mediaDevices?.enumerateDevices()
-          .then(devices => {
-            const hasCamera = devices.some(device => device.kind === 'videoinput');
-            setHasCameraPermission(hasCamera);
-          })
-          .catch(() => setHasCameraPermission(false));
-    }
+    // Cleanup stream on component unmount
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
   }, []);
 
   const startVideoStream = async () => {
-    if (videoRef.current) {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-            videoRef.current.srcObject = stream;
-            setIsCameraOpen(true);
-            setHasCameraPermission(true);
-        } catch (err) {
-            console.error(err);
-            setHasCameraPermission(false);
-            toast({
-                variant: 'destructive',
-                title: t('camera_error_title'),
-                description: t('camera_error_description'),
-            });
-        }
+    if (isCameraOpen) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setHasCameraPermission(true);
+      setIsCameraOpen(true);
+    } catch (err) {
+      console.error("Camera access error:", err);
+      setHasCameraPermission(false);
+      setIsCameraOpen(false);
+      toast({
+        variant: 'destructive',
+        title: t('camera_permission_denied_title'),
+        description: t('camera_permission_denied_description'),
+      });
     }
   };
-
+  
   const stopVideoStream = () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach((track) => track.stop());
       videoRef.current.srcObject = null;
-      setIsCameraOpen(false);
     }
+    setIsCameraOpen(false);
   };
 
   const handleLanguageChange = (lang: string) => {
@@ -250,14 +242,14 @@ export default function DiseaseDiagnosisPage() {
                           <FileImage className="mr-2 h-4 w-4" />
                           {imagePreview ? t('change_image_button') : t('upload_image_button')}
                         </Button>
-                        <Button type="button" className="w-full" onClick={handleCameraOpen} disabled={hasCameraPermission === false}>
+                        <Button type="button" className="w-full" onClick={handleCameraOpen}>
                           <Camera className="mr-2 h-4 w-4" />
                           {t('use_camera_button')}
                         </Button>
                       </>
                     )}
                    </div>
-                   {hasCameraPermission === false && (
+                   {!hasCameraPermission && (
                     <Alert variant="destructive">
                       <AlertTitle>{t('camera_permission_denied_title')}</AlertTitle>
                       <AlertDescription>{t('camera_permission_denied_description')}</AlertDescription>
@@ -412,3 +404,5 @@ export default function DiseaseDiagnosisPage() {
     </div>
   );
 }
+
+    
