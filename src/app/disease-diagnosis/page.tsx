@@ -52,14 +52,24 @@ export default function DiseaseDiagnosisPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
-  useEffect(() => {
-    // Check for camera permissions on mount
-    navigator.mediaDevices?.enumerateDevices()
-      .then(devices => {
-        const hasCamera = devices.some(device => device.kind === 'videoinput');
-        setHasCameraPermission(hasCamera);
-      })
-      .catch(() => setHasCameraPermission(false));
+   useEffect(() => {
+    // Check for camera permissions on mount more reliably
+    if (navigator.permissions) {
+        navigator.permissions.query({ name: 'camera' as PermissionName }).then((permissionStatus) => {
+            setHasCameraPermission(permissionStatus.state !== 'denied');
+            permissionStatus.onchange = () => {
+                setHasCameraPermission(permissionStatus.state !== 'denied');
+            };
+        });
+    } else {
+        // Fallback for older browsers
+        navigator.mediaDevices?.enumerateDevices()
+          .then(devices => {
+            const hasCamera = devices.some(device => device.kind === 'videoinput');
+            setHasCameraPermission(hasCamera);
+          })
+          .catch(() => setHasCameraPermission(false));
+    }
   }, []);
 
   const startVideoStream = async () => {
