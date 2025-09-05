@@ -47,42 +47,46 @@ export default function DiseaseDiagnosisPage() {
   const { toast } = useToast();
   const { t } = useTranslation(language);
 
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean>(true);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
-   useEffect(() => {
-    // Cleanup stream on component unmount
-    return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach((track) => track.stop());
-      }
+  useEffect(() => {
+    let stream: MediaStream | null = null;
+    const enableCamera = async () => {
+        if (isCameraOpen) {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                }
+                setHasCameraPermission(true);
+            } catch (err) {
+                console.error("Camera access error:", err);
+                setHasCameraPermission(false);
+                setIsCameraOpen(false);
+                toast({
+                    variant: 'destructive',
+                    title: t('camera_permission_denied_title'),
+                    description: t('camera_permission_denied_description'),
+                });
+            }
+        }
     };
-  }, []);
+    enableCamera();
+    
+    // Cleanup function
+    return () => {
+        if (videoRef.current && videoRef.current.srcObject) {
+            const mediaStream = videoRef.current.srcObject as MediaStream;
+            mediaStream.getTracks().forEach((track) => track.stop());
+            videoRef.current.srcObject = null;
+        }
+    };
+}, [isCameraOpen, t, toast]);
 
-  const startVideoStream = async () => {
-    if (isCameraOpen) return;
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      setHasCameraPermission(true);
-      setIsCameraOpen(true);
-    } catch (err) {
-      console.error("Camera access error:", err);
-      setHasCameraPermission(false);
-      setIsCameraOpen(false);
-      toast({
-        variant: 'destructive',
-        title: t('camera_permission_denied_title'),
-        description: t('camera_permission_denied_description'),
-      });
-    }
-  };
-  
+
   const stopVideoStream = () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
@@ -101,7 +105,7 @@ export default function DiseaseDiagnosisPage() {
     setResult(null);
     setImagePreview(null);
     setImageFile(null);
-    startVideoStream();
+    setIsCameraOpen(true);
   };
 
   const handleCapture = () => {
@@ -249,7 +253,7 @@ export default function DiseaseDiagnosisPage() {
                       </>
                     )}
                    </div>
-                   {!hasCameraPermission && (
+                   {hasCameraPermission === false && (
                     <Alert variant="destructive">
                       <AlertTitle>{t('camera_permission_denied_title')}</AlertTitle>
                       <AlertDescription>{t('camera_permission_denied_description')}</AlertDescription>
