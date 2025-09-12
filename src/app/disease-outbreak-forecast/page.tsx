@@ -223,4 +223,5 @@ export default function DiseaseOutbreakForecastPage() {
       </main>
     </div>
   );
+
 }
