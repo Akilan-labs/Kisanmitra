@@ -295,4 +295,5 @@ export default function MarketIntelligencePage() {
       </main>
     </div>
   );
+
 }
