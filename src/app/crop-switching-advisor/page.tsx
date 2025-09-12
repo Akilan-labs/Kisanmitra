@@ -256,4 +256,5 @@ export default function CropSwitchingAdvisorPage() {
       </main>
     </div>
   );
+
 }
