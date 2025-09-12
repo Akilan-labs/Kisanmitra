@@ -233,4 +233,5 @@ export default function AIAssistantPage() {
       </main>
     </div>
   );
+
 }
