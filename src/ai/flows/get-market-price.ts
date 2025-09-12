@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Get Market Price flow for farmers.
@@ -39,15 +40,15 @@ const getMarketPricePrompt = ai.definePrompt({
   name: 'getMarketPricePrompt',
   input: {schema: GetMarketPriceInputSchema},
   output: {schema: GetMarketPriceOutputSchema},
-  prompt: `You are an expert market analyst for Indian agricultural markets. Your goal is to provide the most recent, real-time market price available.
+  prompt: `You are an expert market analyst for Indian agricultural markets. Your goal is to provide the most recent, real-time market price available. It is unacceptable to provide an estimate or a guess; you must use web search to find a reported price.
 
 **Task:**
 Provide the current market price, a trend analysis, and historical data for a specific crop in a given mandi (market).
 
 **Instructions:**
-1.  **Prioritize Recency:** Perform a web search to find **today's closing price** or the absolute most recent price for the given crop in the specified mandi. State the date of the price you find.
-2.  **Find Fallbacks:** If an exact match for the mandi isn't found, use a major nearby market in the same state. Clearly state which mandi you are using.
-3.  **Provide Current Price:** The primary output must be the most recent price found.
+1.  **Prioritize Recency and Accuracy:** Perform a web search to find **today's closing price** or the absolute most recent reported price for the given crop in the specified mandi. You MUST state the date of the price you find.
+2.  **Find Fallbacks:** If an exact match for the mandi isn't found, use a major nearby market in the same state. You MUST clearly state which mandi you are using if it's a fallback.
+3.  **Provide Current Price:** The primary output must be the most recent price found. Specify the units (e.g., per quintal) in your analysis.
 4.  **Gather Historical Data:** Provide price points for the last 7 days to show a trend. If daily data is not available, provide what you can and note the gaps.
 5.  **Generate Trend Analysis:** Based on the historical data, generate a concise trend analysis (e.g., "Prices have been stable," "Prices are trending upwards," "Volatile market this week").
 6.  **Use INR:** All monetary values must be in Indian Rupees (INR).
