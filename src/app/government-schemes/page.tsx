@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,8 +24,9 @@ const formSchema = z.object({
 });
 
 export default function GovernmentSchemesPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [result, setResult] = useState<FindGovernmentSchemesOutput | null>(null);
+  const [searchTitle, setSearchTitle] = useState('Latest Schemes');
   const { language, setLanguage } = useLanguage();
   const [isRecording, setIsRecording] = useState(false);
   const [activeAudio, setActiveAudio] = useState<{ id: number; url: string; } | null>(null);
@@ -41,10 +42,40 @@ export default function GovernmentSchemesPage() {
     defaultValues: { query: '' },
   });
 
-  const handleLanguageChange = (lang: string) => {
-    setLanguage(lang);
+  const fetchLatestSchemes = async (lang: string) => {
+    setIsLoading(true);
     setResult(null);
     setActiveAudio(null);
+    setSearchTitle(t('latest_schemes_title') as string);
+    try {
+      const response = await findGovernmentSchemesAction({ query: 'latest agricultural schemes in India', language: lang });
+      if (response.success) {
+        setResult(response.data);
+      } else {
+        toast({
+          title: t('search_failed_title'),
+          description: response.error,
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: t('error'),
+        description: t('unexpected_error'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchLatestSchemes(language);
+  }, [language]);
+
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
   };
 
   const handleMicClick = async () => {
@@ -130,6 +161,7 @@ export default function GovernmentSchemesPage() {
     setIsLoading(true);
     setResult(null);
     setActiveAudio(null);
+    setSearchTitle(t('search_results_title') as string);
     try {
       const response = await findGovernmentSchemesAction({ ...values, language });
       if (response.success) {
@@ -189,19 +221,20 @@ export default function GovernmentSchemesPage() {
                     )}
                   />
                   <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
-                    {isLoading ? (
+                    {isLoading && searchTitle === t('search_results_title') ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    {isLoading ? t('searching_button') : t('search_button')}
+                    {isLoading && searchTitle === t('search_results_title') ? t('searching_button') : t('search_button')}
                   </Button>
                 </form>
               </Form>
             </CardContent>
           </Card>
-
+          
           <div className="space-y-4">
+             <h2 className="text-2xl font-bold font-headline">{searchTitle}</h2>
             {isLoading && (
               <div className="flex h-64 items-center justify-center text-muted-foreground">
                 <Loader2 className="h-8 w-8 animate-spin" />
@@ -253,14 +286,14 @@ export default function GovernmentSchemesPage() {
                 ))}
               </div>
             )}
-             {result && result.schemes.length === 0 && (
+             {result && result.schemes.length === 0 && !isLoading && (
               <div className="flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center text-muted-foreground">
                 <Info className="h-10 w-10 mb-4"/>
                 <h3 className="text-lg font-semibold">{t('no_schemes_found_message')}</h3>
                 <p className="text-sm">{t('try_different_keywords_message')}</p>
               </div>
             )}
-            {!isLoading && !result && (
+            {!result && !isLoading && (
               <div className="flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center text-muted-foreground">
                 <ScrollText className="h-12 w-12 text-muted-foreground/50" />
                 <p className="mt-4">{t('schemes_placeholder_text')}</p>
@@ -272,3 +305,5 @@ export default function GovernmentSchemesPage() {
     </div>
   );
 }
+
+    

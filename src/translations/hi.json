@@ -78,7 +78,7 @@
   "learn_more_button": "और जानें",
   "no_schemes_found_message": "आपकी क्वेरी के लिए कोई योजना नहीं मिली।",
   "try_different_keywords_message": "विभिन्न कीवर्ड का उपयोग करने का प्रयास करें।",
-  "schemes_placeholder_text": "सरकारी योजनाओं के खोज परिणाम यहाँ दिखाई देंगे।",
+  "schemes_placeholder_text": "परिणाम देखने के लिए सरकारी योजनाओं की खोज करें।",
   "enter_crop_details_title": "खेत और फसल का विवरण दर्ज करें",
   "enter_crop_details_description": "संदर्भ-जागरूक उपज भविष्यवाणी प्राप्त करने के लिए विवरण प्रदान करें।",
   "crop_field_image_label": "फ़सल के खेत की तस्वीर (वैकल्पिक)",
@@ -211,5 +211,9 @@
   "suitability_analysis_label": "उपयुक्तता विश्लेषण",
   "actionable_advice_label": "कार्रवाई योग्य सलाह",
   "no_recommendations_title": "कोई सिफारिशें उपलब्ध नहीं हैं",
-  "no_recommendations_description": "एआई सिफारिशें उत्पन्न नहीं कर सका। कृपया फसलों का एक अलग सेट आज़माएं या अपने इनपुट की जांच करें।"
+  "no_recommendations_description": "एआई सिफारिशें उत्पन्न नहीं कर सका। कृपया फसलों का एक अलग सेट आज़माएं या अपने इनपुट की जांच करें।",
+  "latest_schemes_title": "नवीनतम योजनाएं",
+  "search_results_title": "खोज परिणाम"
 }
+
+    

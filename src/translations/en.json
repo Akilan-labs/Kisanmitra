@@ -79,8 +79,7 @@
   "learn_more_button": "Learn More",
   "no_schemes_found_message": "No schemes found for your query.",
   "try_different_keywords_message": "Try using different keywords.",
-  "schemes_placeholder_alt": "Government building",
-  "schemes_placeholder_text": "Search results for government schemes will appear here.",
+  "schemes_placeholder_text": "Search for government schemes to see results.",
   "enter_crop_details_title": "Enter Farm & Crop Details",
   "enter_crop_details_description": "Provide details to get a context-aware yield prediction.",
   "crop_field_image_label": "Crop Field Image (Optional)",
@@ -217,5 +216,9 @@
   "suitability_analysis_label": "Suitability Analysis",
   "actionable_advice_label": "Actionable Advice",
   "no_recommendations_title": "No Recommendations Available",
-  "no_recommendations_description": "The AI could not generate recommendations. Please try a different set of crops or check your inputs."
+  "no_recommendations_description": "The AI could not generate recommendations. Please try a different set of crops or check your inputs.",
+  "latest_schemes_title": "Latest Schemes",
+  "search_results_title": "Search Results"
 }
+
+    

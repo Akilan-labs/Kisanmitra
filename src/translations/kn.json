@@ -78,7 +78,7 @@
   "learn_more_button": "ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ",
   "no_schemes_found_message": "ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ಯಾವುದೇ ಯೋಜನೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ.",
   "try_different_keywords_message": "ಬೇರೆ ಕೀವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಲು ಪ್ರಯತ್ನಿಸಿ.",
-  "schemes_placeholder_text": "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.",
+  "schemes_placeholder_text": "ಫಲಿತಾಂಶಗಳನ್ನು ನೋಡಲು ಸರ್ಕಾರಿ ಯೋಜನೆಗಳಿಗಾಗಿ ಹುಡುಕಿ.",
   "enter_crop_details_title": "ಫಾರ್ಮ್ ಮತ್ತು ಬೆಳೆ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ",
   "enter_crop_details_description": "ಸನ್ನಿವೇಶ-ಅರಿವಿನ ಇಳುವರಿ ಭವಿಷ್ಯವನ್ನು ಪಡೆಯಲು ವಿವರಗಳನ್ನು ಒದಗಿಸಿ.",
   "crop_field_image_label": "ಬೆಳೆ ಕ್ಷೇತ್ರದ ಚಿತ್ರ (ಐಚ್ಛಿಕ)",
@@ -211,5 +211,9 @@
   "suitability_analysis_label": "ಸೂಕ್ತತೆ ವಿಶ್ಲೇಷಣೆ",
   "actionable_advice_label": "ಕಾರ್ಯಸಾಧ್ಯವಾದ ಸಲಹೆ",
   "no_recommendations_title": "ಯಾವುದೇ ಶಿಫಾರಸುಗಳು ಲಭ್ಯವಿಲ್ಲ",
-  "no_recommendations_description": "ಎಐ ಶಿಫಾರಸುಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಬೇರೆ ಬೆಳೆಗಳ ಗುಂಪನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಇನ್‌ಪುಟ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ."
+  "no_recommendations_description": "ಎಐ ಶಿಫಾರಸುಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಬೇರೆ ಬೆಳೆಗಳ ಗುಂಪನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಇನ್‌ಪುಟ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",
+  "latest_schemes_title": "ಇತ್ತೀಚಿನ ಯೋಜನೆಗಳು",
+  "search_results_title": "ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು"
 }
+
+    

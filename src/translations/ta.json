@@ -36,7 +36,7 @@
   "diagnosing_button": "நோய் கண்டறியப்படுகிறது...",
   "diagnose_disease_button": "நோயைக் கண்டறியவும்",
   "diagnosis_result_title": "நோய் கண்டறிதல் முடிவு",
-  "diagnosis_result_description": "AI- శక్తితో విశ్లేషణ మరియు సూచించిన నివారణలు.",
+  "diagnosis_result_description": "AI- சக்திతో విశ్లేషణ మరియు సూచించిన నివారణలు.",
   "identified_crop_label": "அடையாளம் காணப்பட்ட பயிர்",
   "disease_pest_label": "நோய்/பூச்சி",
   "severity_label": "தீவிரம்",
@@ -78,7 +78,7 @@
   "learn_more_button": "மேலும் அறிய",
   "no_schemes_found_message": "మీ ప్రశ్నకు ಯಾವುದೇ ಯೋಜನೆಗಳು కనుగొనబడలేదు.",
   "try_different_keywords_message": "ಬೇರೆ కీవర్డ్‌లను ಬಳಸಲು ಪ್ರಯತ್ನించండి.",
-  "schemes_placeholder_text": "ప్రభుత్వ పథకాల శోధన ఫలితాలు ఇక్కడ కనిపిస్తాయి.",
+  "schemes_placeholder_text": "முடிவுகளைப் பார்க்க அரசு திட்டங்களைத் தேடுங்கள்.",
   "enter_crop_details_title": "பண்ணை மற்றும் பயிர் விவரங்களை உள்ளிடவும்",
   "enter_crop_details_description": "சூழல்-விழிப்புணர்வு விளைச்சல் கணிப்பைப் பெற விவரங்களை வழங்கவும்.",
   "crop_field_image_label": "பயிர் ಕ್ಷೇತ್ರದ படம் (விரும்பினால்)",
@@ -211,5 +211,9 @@
   "suitability_analysis_label": "பொருத்தப்பாட்டு பகுப்பாய்வு",
   "actionable_advice_label": "செயல்படக்கூடிய அறிவுரை",
   "no_recommendations_title": "பரிந்துரைகள் எதுவும் கிடைக்கவில்லை",
-  "no_recommendations_description": "AI பரிந்துரைகளை உருவாக்க முடியவில்லை. ದಯವಿಟ್ಟು ಬೇರೆ ಬೆಳೆಗಳ ಗುಂಪನ್ನು ಪ್ರಯತ್ನಿಸಿ లేదా ನಿಮ್ಮ ఇన్‌పుట్‌లను ಪರಿಶೀಲಿಸಿ."
+  "no_recommendations_description": "AI பரிந்துரைகளை உருவாக்க முடியவில்லை. దయవిಟ್ಟು ಬೇರೆ ಬೆಳೆಗಳ ಗುಂಪನ್ನು ಪ್ರಯತ್ನಿಸಿ లేదా ನಿಮ್ಮ ఇన్‌పుట్‌లను ಪರಿಶೀಲಿಸಿ.",
+  "latest_schemes_title": "சமீபத்திய திட்டங்கள்",
+  "search_results_title": "தேடல் முடிவுகள்"
 }
+
+    
