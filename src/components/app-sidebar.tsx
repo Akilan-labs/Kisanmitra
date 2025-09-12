@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, Leaf, LineChart, ScrollText, Warehouse, CloudSun, ShieldAlert, Recycle, LayoutDashboard } from 'lucide-react';
+import { Bot, Leaf, LineChart, ScrollText, Warehouse, CloudSun, ShieldAlert, Recycle, LayoutDashboard, Replace } from 'lucide-react';
 
 import {
   Sidebar,
@@ -29,6 +29,7 @@ function SidebarNavigation() {
 
   const links = [
     { href: '/dashboard', label: t('sidebar_dashboard'), icon: LayoutDashboard },
+    { href: '/crop-switching-advisor', label: t('sidebar_crop_advisor'), icon: Replace },
     { href: '/disease-diagnosis', label: t('sidebar_crop_disease'), icon: Leaf },
     { href: '/market-intelligence', label: t('sidebar_market_prices'), icon: LineChart },
     { href: '/government-schemes', label: t('sidebar_govt_schemes'), icon: ScrollText },
