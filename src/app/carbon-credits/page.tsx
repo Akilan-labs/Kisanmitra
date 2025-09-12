@@ -426,4 +426,5 @@ export default function CarbonCreditsPage() {
       </main>
     </div>
   );
+
 }
