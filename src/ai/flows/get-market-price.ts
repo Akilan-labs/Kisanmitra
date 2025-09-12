@@ -39,18 +39,24 @@ const getMarketPricePrompt = ai.definePrompt({
   name: 'getMarketPricePrompt',
   input: {schema: GetMarketPriceInputSchema},
   output: {schema: GetMarketPriceOutputSchema},
-  prompt: `You are an expert market analyst for Indian farmers.
-Your task is to provide the current market price, a trend analysis, and historical data for a specific crop in a given mandi (market).
+  prompt: `You are an expert market analyst for Indian agricultural markets. Your goal is to provide the most recent, real-time market price available.
 
-1. Search the web for the most up-to-date market price for the given crop in the specified mandi. If an exact match for the mandi isn't found, use a major nearby market in the same state.
-2. Provide the current price. For historical data, provide price points for the last 7 days. If daily data isn't available, provide what you can find and note it.
-3. Based on the data you find, generate a concise trend analysis.
-4. All monetary values should be in Indian Rupees (INR).
+**Task:**
+Provide the current market price, a trend analysis, and historical data for a specific crop in a given mandi (market).
+
+**Instructions:**
+1.  **Prioritize Recency:** Perform a web search to find **today's closing price** or the absolute most recent price for the given crop in the specified mandi. State the date of the price you find.
+2.  **Find Fallbacks:** If an exact match for the mandi isn't found, use a major nearby market in the same state. Clearly state which mandi you are using.
+3.  **Provide Current Price:** The primary output must be the most recent price found.
+4.  **Gather Historical Data:** Provide price points for the last 7 days to show a trend. If daily data is not available, provide what you can and note the gaps.
+5.  **Generate Trend Analysis:** Based on the historical data, generate a concise trend analysis (e.g., "Prices have been stable," "Prices are trending upwards," "Volatile market this week").
+6.  **Use INR:** All monetary values must be in Indian Rupees (INR).
 
 Respond in the language specified: {{{language}}}.
 
-Crop: {{{crop}}}
-Mandi: {{{mandi}}}
+**Query:**
+*   **Crop:** {{{crop}}}
+*   **Mandi:** {{{mandi}}}
 `,
 });
 
