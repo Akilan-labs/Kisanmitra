@@ -31,29 +31,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## How to Push Your Code to GitHub
-
-It can be tricky, but here are the exact commands to copy and paste into your terminal. This will upload your entire project to your GitHub repository.
-
-**Step 1: Open a terminal** in your project's root directory.
-
-**Step 2: Copy and paste these commands one by one.**
-
-```bash
-# Initialize a new Git repository
-git init
-
-# Add all the files to be tracked by Git
-git add .
-
-# Create your first "commit" (a snapshot of your code)
-git commit -m "Initial commit of KisanMitra project"
-
-# Rename your local branch to "main" to match GitHub's standard
-git branch -M main
-
-# Link your local repository to your GitHub repository
-git remote add origin https://github.com/Akilan-labs/Kisanmitra.git
 
 # Push your code to GitHub, overwriting what's on GitHub
 git push -u -f origin main
