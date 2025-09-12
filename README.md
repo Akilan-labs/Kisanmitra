@@ -15,25 +15,4 @@ This is a Next.js application built with Firebase Studio that provides AI-powere
 *   **Carbon Credits Estimator**: Estimate your farm's carbon credit potential.
 *   **AI Assistant**: A conversational chatbot for all your farming questions.
 
-## Getting Started
 
-First, install the necessary packages:
-
-```bash
-npm install
-```
-
-Then, run the development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-
-# Push your code to GitHub, overwriting what's on GitHub
-git push -u -f origin main
-```
-
-After running these commands, refresh your GitHub page, and you should see all of your project files there!
