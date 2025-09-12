@@ -424,4 +424,5 @@ export default function YieldPredictionPage() {
       </main>
     </div>
   );
+
 }
