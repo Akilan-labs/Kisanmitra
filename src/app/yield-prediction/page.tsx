@@ -46,6 +46,7 @@ import { useLanguage } from '@/hooks/use-language';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
+import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
@@ -54,6 +55,8 @@ const formSchema = z.object({
   rainfall: z.coerce.number().positive('Rainfall must be a positive number.'),
   region: z.string().min(2, 'Please enter a region.'),
   plantingDate: z.date({ required_error: 'A planting date is required.'}),
+  soilReport: z.string().optional(),
+  history: z.string().optional(),
 });
 
 const soilTypes = ['Loamy', 'Sandy', 'Clay', 'Silt', 'Peat', 'Chalky'];
@@ -86,6 +89,8 @@ export default function YieldPredictionPage() {
       soilType: '',
       rainfall: 1000,
       region: '',
+      soilReport: '',
+      history: '',
     },
   });
   
@@ -168,8 +173,8 @@ export default function YieldPredictionPage() {
                     {t('enter_crop_details_description')}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 mb-4">
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
                     <Label htmlFor="crop-image">{t('crop_field_image_label')}</Label>
                     <Input
                       id="crop-image"
@@ -265,7 +270,7 @@ export default function YieldPredictionPage() {
                       control={form.control}
                       name="region"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="sm:col-span-2">
                           <FormLabel>{t('region_label')}</FormLabel>
                           <FormControl>
                             <Input placeholder={t('region_placeholder')} {...field} />
@@ -278,7 +283,7 @@ export default function YieldPredictionPage() {
                       control={form.control}
                       name="plantingDate"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col">
+                        <FormItem className="flex flex-col sm:col-span-2">
                           <FormLabel>{t('planting_date_label')}</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
@@ -316,6 +321,32 @@ export default function YieldPredictionPage() {
                       )}
                     />
                   </div>
+                   <FormField
+                      control={form.control}
+                      name="soilReport"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Soil Report Data (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="e.g., pH: 6.5, N: 120kg/ha, P: 50kg/ha, K: 80kg/ha" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="history"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Past Crop & Treatment History (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="e.g., Last year: Maize, yield 2.5t/acre. Applied fungicide in July." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                 </CardContent>
                 <CardFooter>
                   <Button type="submit" className="w-full" disabled={isLoading}>
@@ -394,5 +425,3 @@ export default function YieldPredictionPage() {
     </div>
   );
 }
-
-    

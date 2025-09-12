@@ -11,6 +11,8 @@ export const PredictYieldInputSchema = z.object({
   photoDataUri: z.string().optional().describe(
     "An optional photo of the crop field, as a data URI. This is a critical input for assessing real-time crop health."
   ),
+  soilReport: z.string().optional().describe('Optional text data from a soil report (e.g., NPK values, pH).'),
+  history: z.string().optional().describe('Optional text describing past treatments (fertilizers, pesticides) for this field.'),
 });
 export type PredictYieldInput = z.infer<typeof PredictYieldInputSchema>;
 
