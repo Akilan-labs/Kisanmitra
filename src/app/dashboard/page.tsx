@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon, TestTube2 } from 'lucide-react';
+import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon, TestTube2, AlertCircle, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { getFarmInsightsAction } from '@/app/actions';
@@ -44,25 +44,25 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const getPriorityStyles = (priority: 'Low' | 'Medium' | 'High'): { variant: "default" | "secondary" | "destructive", className: string } => {
+const getPriorityStyles = (priority: 'Low' | 'Medium' | 'High'): { variant: "default" | "secondary" | "destructive", className: string, icon: React.ReactNode } => {
     switch (priority) {
         case 'High':
-            return { variant: 'destructive', className: 'border-destructive/50' };
+            return { variant: 'destructive', className: 'border-destructive/80', icon: <AlertCircle className="h-5 w-5" /> };
         case 'Medium':
-            return { variant: 'secondary', className: 'border-yellow-500/50' };
+            return { variant: 'secondary', className: 'border-yellow-500/80', icon: <AlertCircle className="h-5 w-5" /> };
         case 'Low':
         default:
-            return { variant: 'default', className: 'border-primary/20' };
+            return { variant: 'default', className: 'border-primary/50', icon: <CheckCircle className="h-5 w-5" /> };
     }
 }
 
 const categoryIconMap: Record<GetFarmInsightsOutput['insights'][0]['category'], React.ReactNode> = {
-    Weather: <CloudSun className="h-5 w-5" />,
-    Disease: <ShieldAlert className="h-5 w-5" />,
-    Irrigation: <Droplets className="h-5 w-5" />,
-    Market: <LineChart className="h-5 w-5" />,
-    Fertilizer: <TestTube2 className="h-5 w-5" />,
-    General: <Info className="h-5 w-5" />,
+    Weather: <CloudSun className="h-6 w-6" />,
+    Disease: <ShieldAlert className="h-6 w-6" />,
+    Irrigation: <Droplets className="h-6 w-6" />,
+    Market: <LineChart className="h-6 w-6" />,
+    Fertilizer: <TestTube2 className="h-6 w-6" />,
+    General: <Info className="h-6 w-6" />,
 }
 
 export default function FarmDashboardPage() {
@@ -254,20 +254,37 @@ export default function FarmDashboardPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {insightsResult.insights.length > 0 ? insightsResult.insights.map((insight, index) => {
-                    const priorityStyles = getPriorityStyles(insight.priority);
+                    const { variant, className, icon } = getPriorityStyles(insight.priority);
+                    const recommendationParts = insight.recommendation.split('Why:');
+                    const action = recommendationParts[0].replace('Recommendation:', '').trim();
+                    const reason = recommendationParts[1]?.trim() ?? '';
+                    
                     return (
-                        <Card key={index} className={cn("flex items-start gap-4 p-4 border-l-4", priorityStyles.className)}>
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                                {categoryIconMap[insight.category]}
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="font-semibold font-headline text-lg">{insight.title}</h3>
-                                    <Badge variant={priorityStyles.variant}>{insight.priority}</Badge>
+                        <Card key={index} className={cn("border-l-4", className)}>
+                          <CardHeader className="flex flex-row items-start gap-4 space-y-0">
+                               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                                  {categoryIconMap[insight.category]}
+                               </div>
+                               <div className="flex-1">
+                                  <div className="flex items-center justify-between">
+                                      <CardTitle className="text-lg">{insight.title}</CardTitle>
+                                      <Badge variant={variant}>{insight.priority}</Badge>
+                                  </div>
+                                  <CardDescription>Source: {insight.source}</CardDescription>
+                               </div>
+                          </CardHeader>
+                          <CardContent>
+                              <div className="space-y-2">
+                                <h4 className="font-semibold flex items-center gap-2">{icon} Action</h4>
+                                <p className="text-foreground/90 ml-7">{action}</p>
+                              </div>
+                              {reason && (
+                                <div className="space-y-2 mt-3">
+                                  <h4 className="font-semibold flex items-center gap-2"><Info className="h-5 w-5" /> Reason</h4>
+                                  <p className="text-muted-foreground ml-7">{reason}</p>
                                 </div>
-                                <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{insight.recommendation}</p>
-                                <p className="text-xs text-muted-foreground/80 mt-2">Source: {insight.source}</p>
-                            </div>
+                              )}
+                          </CardContent>
                         </Card>
                     )
                     }) : (
@@ -293,3 +310,4 @@ export default function FarmDashboardPage() {
     </div>
   );
 }
+
