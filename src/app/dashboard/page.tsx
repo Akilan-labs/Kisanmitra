@@ -121,7 +121,8 @@ export default function FarmDashboardPage() {
 
   async function onGetRecommendations() {
     if (!farmData) return;
-     const candidateCrops = alternativeCrops.split(',').map(s => s.trim()).filter(Boolean);
+    
+    const candidateCrops = alternativeCrops.split(',').map(s => s.trim()).filter(Boolean);
     if (candidateCrops.length === 0) {
       toast({
         title: 'No Alternative Crops',
@@ -140,7 +141,7 @@ export default function FarmDashboardPage() {
         soilReport: farmData.soilReport,
         history: farmData.history,
         language,
-        candidateCrops: candidateCrops,
+        candidateCrops,
       });
        if (response.success) {
         setRecommendationsResult(response.data);
