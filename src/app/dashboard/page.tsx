@@ -278,99 +278,99 @@ export default function FarmDashboardPage() {
             </Form>
           </Card>
 
+          <Card>
+              <CardHeader>
+                  <CardTitle>AI Crop Switching Advisor</CardTitle>
+                  <CardDescription>Get AI-powered recommendations for alternative crops for the next season. Fill out the form above to enable.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                  <Button onClick={onGetRecommendations} disabled={isAdvisorLoading || !farmData}>
+                    {isAdvisorLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Replace className="mr-2 h-4 w-4" />}
+                    {isAdvisorLoading ? 'Analyzing Alternatives...' : 'Find Alternative Crops'}
+                  </Button>
+                  {isAdvisorLoading && <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/></div>}
+                  {recommendationsResult && (
+                  <div className="mt-6 space-y-4">
+                    {recommendationsResult.recommendations.map((rec, index) => (
+                        <Card key={index} className="border-l-4 border-primary">
+                          <CardHeader>
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <CardTitle className="text-xl">#{index + 1}: {rec.cropName}</CardTitle>
+                                <CardDescription>{rec.suitability.split('.')[0]}.</CardDescription>
+                              </div>
+                              <Badge variant="secondary">{rec.profitabilityScore}</Badge>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <div>
+                              <h4 className="font-semibold">Profitability & Risk Analysis</h4>
+                              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.profitabilityAnalysis}</p>
+                            </div>
+                              <div>
+                              <h4 className="font-semibold">Suitability Analysis</h4>
+                              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.suitability}</p>
+                            </div>
+                              <div>
+                              <h4 className="font-semibold">Actionable Advice</h4>
+                              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.actionableAdvice}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                    ))}
+                  </div>
+                  )}
+              </CardContent>
+          </Card>
+
+
           {isLoading && (
             <div className="flex h-64 items-center justify-center text-muted-foreground">
               <Loader2 className="h-8 w-8 animate-spin" />
             </div>
           )}
 
-          {insightsResult && (
-             <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{t('weekly_insights_title')}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {insightsResult.insights.length > 0 ? insightsResult.insights.map((insight, index) => {
-                        const priorityStyles = getPriorityStyles(insight.priority);
-                        return (
-                            <Card key={index} className={cn("flex items-start gap-4 p-4 border-l-4", priorityStyles.className)}>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                                    {categoryIconMap[insight.category]}
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="font-semibold font-headline text-lg">{insight.title}</h3>
-                                        <Badge variant={priorityStyles.variant}>{insight.priority}</Badge>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{insight.recommendation}</p>
-                                    <p className="text-xs text-muted-foreground/80 mt-2">Source: {insight.source}</p>
-                                </div>
-                            </Card>
-                        )
-                        }) : (
-                            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-center text-muted-foreground">
-                            <ShieldCheck className="h-12 w-12 text-green-500"/>
-                            <h3 className="mt-4 text-lg font-semibold">All Clear!</h3>
-                            <p className="mt-1 text-sm">No critical alerts for your farm this week. Keep up the great work!</p>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>AI Crop Switching Advisor</CardTitle>
-                        <CardDescription>Get AI-powered recommendations for alternative crops for the next season.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                       <Button onClick={onGetRecommendations} disabled={isAdvisorLoading}>
-                         {isAdvisorLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Replace className="mr-2 h-4 w-4" />}
-                         {isAdvisorLoading ? 'Analyzing Alternatives...' : 'Find Alternative Crops'}
-                       </Button>
-                       {isAdvisorLoading && <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/></div>}
-                       {recommendationsResult && (
-                        <div className="mt-6 space-y-4">
-                          {recommendationsResult.recommendations.map((rec, index) => (
-                             <Card key={index} className="border-l-4 border-primary">
-                                <CardHeader>
-                                  <div className="flex justify-between items-start">
-                                    <div>
-                                      <CardTitle className="text-xl">#{index + 1}: {rec.cropName}</CardTitle>
-                                      <CardDescription>{rec.suitability.split('.')[0]}.</CardDescription>
-                                    </div>
-                                    <Badge variant="secondary">{rec.profitabilityScore}</Badge>
+          {insightsResult ? (
+              <Card>
+                  <CardHeader>
+                      <CardTitle>{t('weekly_insights_title')}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                      {insightsResult.insights.length > 0 ? insightsResult.insights.map((insight, index) => {
+                      const priorityStyles = getPriorityStyles(insight.priority);
+                      return (
+                          <Card key={index} className={cn("flex items-start gap-4 p-4 border-l-4", priorityStyles.className)}>
+                              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                                  {categoryIconMap[insight.category]}
+                              </div>
+                              <div className="flex-1">
+                                  <div className="flex items-center justify-between">
+                                      <h3 className="font-semibold font-headline text-lg">{insight.title}</h3>
+                                      <Badge variant={priorityStyles.variant}>{insight.priority}</Badge>
                                   </div>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                  <div>
-                                    <h4 className="font-semibold">Profitability & Risk Analysis</h4>
-                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.profitabilityAnalysis}</p>
-                                  </div>
-                                   <div>
-                                    <h4 className="font-semibold">Suitability Analysis</h4>
-                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.suitability}</p>
-                                  </div>
-                                   <div>
-                                    <h4 className="font-semibold">Actionable Advice</h4>
-                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.actionableAdvice}</p>
-                                  </div>
-                                </CardContent>
-                             </Card>
-                          ))}
-                        </div>
-                       )}
-                    </CardContent>
-                </Card>
-             </div>
+                                  <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{insight.recommendation}</p>
+                                  <p className="text-xs text-muted-foreground/80 mt-2">Source: {insight.source}</p>
+                              </div>
+                          </Card>
+                      )
+                      }) : (
+                          <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-center text-muted-foreground">
+                          <ShieldCheck className="h-12 w-12 text-green-500"/>
+                          <h3 className="mt-4 text-lg font-semibold">All Clear!</h3>
+                          <p className="mt-1 text-sm">No critical alerts for your farm this week. Keep up the great work!</p>
+                          </div>
+                      )}
+                  </CardContent>
+              </Card>
+          ) : (
+            !isLoading && !farmData && (
+                <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-24 text-center text-muted-foreground">
+                  <Image src="https://picsum.photos/600/400" alt={t('insights_placeholder_alt')} data-ai-hint="farm landscape" width={300} height={200} className="rounded-lg opacity-50"/>
+                  <h2 className="mt-6 text-xl font-semibold font-headline">{t('insights_placeholder_title')}</h2>
+                  <p className="mt-2 max-w-sm">{t('insights_placeholder_text')}</p>
+                </div>
+              )
           )}
-
-          {!isLoading && !insightsResult && (
-              <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-24 text-center text-muted-foreground">
-                <Image src="https://picsum.photos/600/400" alt={t('insights_placeholder_alt')} data-ai-hint="farm landscape" width={300} height={200} className="rounded-lg opacity-50"/>
-                <h2 className="mt-6 text-xl font-semibold font-headline">{t('insights_placeholder_title')}</h2>
-                <p className="mt-2 max-w-sm">{t('insights_placeholder_text')}</p>
-              </div>
-            )}
         </div>
       </main>
     </div>
