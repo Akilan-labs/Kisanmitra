@@ -313,6 +313,7 @@ export default function FarmDashboardPage() {
                     {isAdvisorLoading ? 'Analyzing Alternatives...' : 'Find Alternative Crops'}
                   </Button>
                   {isAdvisorLoading && <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/></div>}
+                  
                   {recommendationsResult && (
                   <div className="mt-6 space-y-4">
                     {recommendationsResult.recommendations.map((rec, index) => (
