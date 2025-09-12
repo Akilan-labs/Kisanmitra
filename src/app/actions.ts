@@ -347,4 +347,5 @@ export async function getCropRecommendationsAction(
         console.error(error);
         return { success: false, error: 'An unexpected error occurred while generating recommendations. Please try again.' };
     }
+
 }
