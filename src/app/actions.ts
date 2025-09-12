@@ -27,8 +27,6 @@ import {
 } from '@/ai/flows/text-to-speech';
 import {
   predictYield,
-  type PredictYieldInput,
-  type PredictYieldOutput,
 } from '@/ai/flows/predict-yield';
 import {
   askAI,
@@ -61,6 +59,8 @@ import {
 } from '@/ai/schemas/farm-insights';
 import type { DiagnoseCropDiseaseInput, DiagnoseCropDiseaseOutput } from '@/ai/schemas/diagnose-crop-disease';
 import { DiagnoseCropDiseaseInputSchema } from '@/ai/schemas/diagnose-crop-disease';
+import type { PredictYieldInput, PredictYieldOutput } from '@/ai/schemas/predict-yield';
+import { PredictYieldInputSchema } from '@/ai/schemas/predict-yield';
 
 
 export async function diagnoseCropDiseaseAction(
@@ -167,20 +167,10 @@ export async function textToSpeechAction(
   }
 }
 
-const predictYieldSchema = z.object({
-  crop: z.string().min(2, 'Please enter a crop name.'),
-  area: z.coerce.number().positive('Area must be a positive number.'),
-  soilType: z.string().min(1, 'Please select a soil type.'),
-  rainfall: z.coerce.number().positive('Rainfall must be a positive number.'),
-  region: z.string().min(2, 'Please enter a region.'),
-  language: z.string(),
-  photoDataUri: z.string().optional(),
-});
-
 export async function predictYieldAction(
   input: PredictYieldInput
 ): Promise<{ success: true; data: PredictYieldOutput } | { success: false; error: string }> {
-  const parsed = predictYieldSchema.safeParse(input);
+  const parsed = PredictYieldInputSchema.safeParse(input);
   if (!parsed.success) {
     const errorMessage = Object.values(parsed.error.flatten().fieldErrors).flat()[0] ?? 'Invalid input. Please check the form and try again.';
     return { success: false, error: errorMessage };

@@ -5,8 +5,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { BarChart, FileImage, Info, Loader2, Sparkles, Warehouse } from 'lucide-react';
+import { BarChart, CalendarIcon, FileImage, Info, Loader2, Sparkles, Warehouse } from 'lucide-react';
 import Image from 'next/image';
+import { format } from 'date-fns';
 
 import { predictYieldAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -37,18 +38,22 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/page-header';
 import { LanguageSwitcher } from '@/components/language-switcher';
-import type { PredictYieldOutput } from '@/ai/flows/predict-yield';
+import type { PredictYieldOutput } from '@/ai/schemas/predict-yield';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { useTranslation } from '@/hooks/use-translation';
 import { useLanguage } from '@/hooks/use-language';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { Calendar } from '@/components/ui/calendar';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
-  area: z.coerce.number().positive('Area must be a positive number.'),
+  hectares: z.coerce.number().positive('Area must be a positive number.'),
   soilType: z.string().min(1, 'Please select a soil type.'),
   rainfall: z.coerce.number().positive('Rainfall must be a positive number.'),
   region: z.string().min(2, 'Please enter a region.'),
+  plantingDate: z.date({ required_error: 'A planting date is required.'}),
 });
 
 const soilTypes = ['Loamy', 'Sandy', 'Clay', 'Silt', 'Peat', 'Chalky'];
@@ -77,7 +82,7 @@ export default function YieldPredictionPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       crop: '',
-      area: 1,
+      hectares: 1,
       soilType: '',
       rainfall: 1000,
       region: '',
@@ -121,7 +126,12 @@ export default function YieldPredictionPage() {
     }
 
     try {
-      const response = await predictYieldAction({ ...values, language, photoDataUri });
+      const response = await predictYieldAction({ 
+          ...values, 
+          plantingDate: format(values.plantingDate, 'yyyy-MM-dd'),
+          language, 
+          photoDataUri 
+        });
       if (response.success) {
         setResult(response.data);
       } else {
@@ -178,7 +188,7 @@ export default function YieldPredictionPage() {
                           className="h-full w-full object-contain rounded-lg"
                         />
                       ) : (
-                        <div className="text-center text-muted-foreground">
+                        <div className="text-center text-muted-foreground p-4">
                           <FileImage className="mx-auto h-12 w-12" />
                           <p className="mt-2">{t('upload_image_prompt')}</p>
                           <p className="text-xs">{t('field_image_accuracy_note')}</p>
@@ -201,14 +211,14 @@ export default function YieldPredictionPage() {
                         </FormItem>
                       )}
                     />
-                    <FormField
+                     <FormField
                       control={form.control}
-                      name="area"
+                      name="hectares"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('area_label')}</FormLabel>
+                          <FormLabel>{t('area_hectares_label')}</FormLabel>
                           <FormControl>
-                            <Input type="number" placeholder={t('area_placeholder')} {...field} />
+                            <Input type="number" placeholder="e.g., 5" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -251,15 +261,56 @@ export default function YieldPredictionPage() {
                         </FormItem>
                       )}
                     />
-                    <FormField
+                     <FormField
                       control={form.control}
                       name="region"
                       render={({ field }) => (
-                        <FormItem className="sm:col-span-2">
+                        <FormItem>
                           <FormLabel>{t('region_label')}</FormLabel>
                           <FormControl>
                             <Input placeholder={t('region_placeholder')} {...field} />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="plantingDate"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>{t('planting_date_label')}</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>{t('planting_date_placeholder')}</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date > new Date() || date < new Date("1900-01-01")
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -297,24 +348,30 @@ export default function YieldPredictionPage() {
                       <Warehouse className="h-5 w-5" />
                       {t('predicted_yield_label')}
                     </h3>
-                    <p className="text-2xl font-bold text-primary">{result.predictedYield}</p>
+                    <p className="text-3xl font-bold text-primary">{result.predictedYield}</p>
                   </div>
                   <div>
                     <h3 className="font-headline mb-1 flex items-center gap-2 text-lg font-semibold">
                       <BarChart className="h-5 w-5" />
                       {t('confidence_label')}
                     </h3>
-                    <Badge
-                      variant={
-                        result.confidence.toLowerCase() === 'high'
-                          ? 'default'
-                          : result.confidence.toLowerCase() === 'medium'
-                          ? 'secondary'
-                          : 'destructive'
-                      }
-                    >
-                      {result.confidence}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                        <Badge
+                        variant={
+                            result.confidence.toLowerCase().startsWith('high')
+                            ? 'default'
+                            : result.confidence.toLowerCase().startsWith('medium')
+                            ? 'secondary'
+                            : 'destructive'
+                        }
+                        >
+                        {result.confidence.split(' ')[0]}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground italic">
+                           {result.confidence.substring(result.confidence.indexOf(' ')+1)}
+                        </span>
+                    </div>
+
                   </div>
                   <div>
                     <h3 className="font-headline mb-1 flex items-center gap-2 text-lg font-semibold">
@@ -326,16 +383,16 @@ export default function YieldPredictionPage() {
                 </div>
               )}
               {!isLoading && !result && (
-                <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+                <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground p-4">
                   <Image
-                    src="https://placehold.co/600x400.png"
+                    src="https://picsum.photos/seed/yield/600/400"
                     alt={t('yield_placeholder_alt')}
                     data-ai-hint="field crops"
                     width={300}
                     height={200}
                     className="rounded-lg opacity-50"
                   />
-                  <p className="mt-4">{t('yield_placeholder_text')}</p>
+                  <p className="mt-4 max-w-sm">{t('yield_placeholder_text')}</p>
                 </div>
               )}
             </CardContent>
