@@ -5,18 +5,17 @@ import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Mic, Search, Sparkles, Volume2 } from 'lucide-react';
+import { Loader2, Mic, Search, Sparkles, Volume2, Info, CheckCircle, Target, FileText } from 'lucide-react';
 import Image from 'next/image';
 
 import { findGovernmentSchemesAction, speechToTextAction, textToSpeechAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/page-header';
 import type { FindGovernmentSchemesOutput } from '@/ai/flows/find-government-schemes';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useTranslation } from '@/hooks/use-translation';
 import { useLanguage } from '@/hooks/use-language';
@@ -30,11 +29,12 @@ export default function GovernmentSchemesPage() {
   const [result, setResult] = useState<FindGovernmentSchemesOutput | null>(null);
   const { language, setLanguage } = useLanguage();
   const [isRecording, setIsRecording] = useState(false);
-  const [isAudioLoading, setIsAudioLoading] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  
+  const [activeAudio, setActiveAudio] = useState<{ id: number; url: string; } | null>(null);
+  const [audioLoadingId, setAudioLoadingId] = useState<number | null>(null);
+
   const { t } = useTranslation(language);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,7 +45,7 @@ export default function GovernmentSchemesPage() {
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
     setResult(null);
-    setAudioUrl(null);
+    setActiveAudio(null);
   };
 
   const handleMicClick = async () => {
@@ -98,36 +98,39 @@ export default function GovernmentSchemesPage() {
     }
   };
 
-  const handlePlayAudio = async () => {
-    if (!result) return;
-    setIsAudioLoading(true);
-    setAudioUrl(null);
+  const handlePlayAudio = async (scheme: FindGovernmentSchemesOutput['schemes'][0], index: number) => {
+    if (activeAudio?.id === index) {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
+        setActiveAudio(null);
+        return;
+    }
 
-    const textToSpeak = result.schemes
-      .map(
-        (scheme) =>
-          `${scheme.title}. ${t('eligibility_label')}: ${scheme.eligibility}. ${t('benefits_label')}: ${scheme.benefits}. ${t('application_process_label')}: ${scheme.applicationProcess}`
-      )
-      .join('\n\n');
+    setAudioLoadingId(index);
+    setActiveAudio(null);
+
+    const textToSpeak = `${scheme.title}. ${t('eligibility_label')}: ${scheme.eligibility}. ${t('benefits_label')}: ${scheme.benefits}. ${t('application_process_label')}: ${scheme.applicationProcess}`;
     
     try {
       const response = await textToSpeechAction({ text: textToSpeak, language });
       if (response.success) {
-        setAudioUrl(response.data.audio);
+        setActiveAudio({ id: index, url: response.data.audio });
       } else {
         toast({ title: t('audio_generation_failed_title'), description: response.error, variant: 'destructive' });
       }
     } catch (error) {
       toast({ title: t('error'), description: t('audio_generation_error'), variant: 'destructive' });
     } finally {
-      setIsAudioLoading(false);
+      setAudioLoadingId(null);
     }
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
-    setAudioUrl(null);
+    setActiveAudio(null);
     try {
       const response = await findGovernmentSchemesAction({ ...values, language });
       if (response.success) {
@@ -156,8 +159,8 @@ export default function GovernmentSchemesPage() {
         <LanguageSwitcher />
       </PageHeader>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
-        <div className="mx-auto max-w-3xl">
-          <Card className="mb-6">
+        <div className="mx-auto max-w-4xl">
+          <Card className="mb-6 shadow-lg">
             <CardHeader>
               <CardTitle>{t('find_government_schemes_title')}</CardTitle>
               <CardDescription>
@@ -166,7 +169,7 @@ export default function GovernmentSchemesPage() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 sm:flex-row sm:items-start">
                   <FormField
                     control={form.control}
                     name="query"
@@ -175,10 +178,10 @@ export default function GovernmentSchemesPage() {
                         <FormLabel className="sr-only">{t('query_label')}</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                            <Input placeholder={t('schemes_search_placeholder')} className="pl-10 pr-10" {...field} />
-                            <Button size="icon" variant={isRecording ? 'destructive' : 'ghost'} type="button" onClick={handleMicClick} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-transparent">
-                               <Mic className="h-4 w-4" />
+                            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                            <Input placeholder={t('schemes_search_placeholder')} className="pl-10 text-base" {...field} />
+                            <Button size="icon" variant={isRecording ? 'destructive' : 'ghost'} type="button" onClick={handleMicClick} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2">
+                               <Mic className="h-5 w-5 text-muted-foreground" />
                             </Button>
                           </div>
                         </FormControl>
@@ -186,7 +189,7 @@ export default function GovernmentSchemesPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" disabled={isLoading} className="h-10">
+                  <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
@@ -206,55 +209,61 @@ export default function GovernmentSchemesPage() {
               </div>
             )}
             {result && result.schemes.length > 0 && (
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-                  <Button onClick={handlePlayAudio} disabled={isAudioLoading} variant="outline">
-                    {isAudioLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Volume2 className="mr-2 h-4 w-4" />}
-                    {isAudioLoading ? t('generating_audio_button') : t('read_aloud_button')}
-                  </Button>
-                  {audioUrl && (
-                    <audio controls autoPlay src={audioUrl} className="w-full max-w-sm">
-                      {t('audio_not_supported')}
-                    </audio>
-                  )}
-                </div>
-                <Accordion type="single" collapsible className="w-full">
-                  {result.schemes.map((scheme, index) => (
-                      <AccordionItem value={`item-${index}`} key={index} className="bg-card border rounded-lg px-4">
-                          <AccordionTrigger className="font-headline text-lg hover:no-underline">{scheme.title}</AccordionTrigger>
-                          <AccordionContent className="space-y-4 pt-2">
-                            <div>
-                                  <h4 className="font-semibold text-base">{t('eligibility_label')}</h4>
-                                  <p className="text-sm text-muted-foreground">{scheme.eligibility}</p>
+              <div className="grid gap-4 md:grid-cols-2">
+                {result.schemes.map((scheme, index) => (
+                    <Card key={index} className="flex flex-col">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-lg">{scheme.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-1 space-y-4">
+                            <div className="flex items-start gap-3">
+                                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0"/>
+                                <div>
+                                    <h4 className="font-semibold text-base">{t('eligibility_label')}</h4>
+                                    <p className="text-sm text-muted-foreground">{scheme.eligibility}</p>
+                                </div>
                             </div>
-                              <div>
-                                  <h4 className="font-semibold text-base">{t('benefits_label')}</h4>
-                                  <p className="text-sm text-muted-foreground">{scheme.benefits}</p>
+                             <div className="flex items-start gap-3">
+                                <Target className="h-5 w-5 text-primary mt-1 flex-shrink-0"/>
+                                <div>
+                                    <h4 className="font-semibold text-base">{t('benefits_label')}</h4>
+                                    <p className="text-sm text-muted-foreground">{scheme.benefits}</p>
+                                </div>
                             </div>
-                              <div>
-                                  <h4 className="font-semibold text-base">{t('application_process_label')}</h4>
-                                  <p className="text-sm text-muted-foreground">{scheme.applicationProcess}</p>
+                             <div className="flex items-start gap-3">
+                                <FileText className="h-5 w-5 text-primary mt-1 flex-shrink-0"/>
+                                <div>
+                                    <h4 className="font-semibold text-base">{t('application_process_label')}</h4>
+                                    <p className="text-sm text-muted-foreground">{scheme.applicationProcess}</p>
+                                </div>
                             </div>
+                        </CardContent>
+                        <CardFooter className="flex-wrap gap-2">
                             {scheme.link && (
                               <Button asChild variant="link" className="p-0 h-auto">
                                   <a href={scheme.link} target="_blank" rel="noopener noreferrer">{t('learn_more_button')}</a>
                               </Button>
                             )}
-                          </AccordionContent>
-                      </AccordionItem>
-                  ))}
-                </Accordion>
+                            <Button onClick={() => handlePlayAudio(scheme, index)} disabled={audioLoadingId !== null} variant="outline" size="sm" className="ml-auto">
+                                {audioLoadingId === index ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Volume2 className="mr-2 h-4 w-4" />}
+                                {activeAudio?.id === index ? 'Stop' : 'Read Aloud'}
+                            </Button>
+                             {activeAudio?.id === index && <audio ref={audioRef} src={activeAudio.url} autoPlay onEnded={() => setActiveAudio(null)} />}
+                        </CardFooter>
+                    </Card>
+                ))}
               </div>
             )}
              {result && result.schemes.length === 0 && (
-              <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed text-center text-muted-foreground">
-                <p>{t('no_schemes_found_message')}</p>
+              <div className="flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center text-muted-foreground">
+                <Info className="h-10 w-10 mb-4"/>
+                <h3 className="text-lg font-semibold">{t('no_schemes_found_message')}</h3>
                 <p className="text-sm">{t('try_different_keywords_message')}</p>
               </div>
             )}
             {!isLoading && !result && (
-              <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed text-center text-muted-foreground">
-                 <Image src="https://placehold.co/600x400.png" alt={t('schemes_placeholder_alt')} data-ai-hint="government building" width={300} height={200} className="rounded-lg opacity-50"/>
+              <div className="flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center text-muted-foreground">
+                 <Image src="https://picsum.photos/seed/docs/600/400" alt={t('schemes_placeholder_alt')} data-ai-hint="government building" width={300} height={200} className="rounded-lg opacity-50"/>
                 <p className="mt-4">{t('schemes_placeholder_text')}</p>
               </div>
             )}
@@ -264,3 +273,5 @@ export default function GovernmentSchemesPage() {
     </div>
   );
 }
+
+    
