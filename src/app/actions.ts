@@ -62,7 +62,7 @@ import { DiagnoseCropDiseaseInputSchema } from '@/ai/schemas/diagnose-crop-disea
 import type { PredictYieldInput, PredictYieldOutput } from '@/ai/schemas/predict-yield';
 import { PredictYieldInputSchema } from '@/ai/schemas/predict-yield';
 import { getCropRecommendations } from '@/ai/flows/get-crop-recommendations';
-import { GetCropRecommendationsInput, GetCropRecommendationsOutput, GetCropRecommendationsInputSchema } from '@/ai/schemas/crop-recommendations';
+import { GetCropRecommendationsInput, GetCropRecommendationsOutput } from '@/ai/schemas/crop-recommendations';
 
 
 export async function diagnoseCropDiseaseAction(
@@ -322,10 +322,20 @@ export async function getFarmInsightsAction(
     }
 }
 
+const getCropRecommendationsSchema = z.object({
+  currentCrop: z.string(),
+  region: z.string(),
+  soilReport: z.string().optional(),
+  history: z.string().optional(),
+  language: z.string(),
+  candidateCrops: z.array(z.string()).min(1, 'Please provide at least one candidate crop.'),
+});
+
+
 export async function getCropRecommendationsAction(
     input: GetCropRecommendationsInput
 ): Promise<{ success: true; data: GetCropRecommendationsOutput } | { success: false; error: string }> {
-    const parsed = GetCropRecommendationsInputSchema.safeParse(input);
+    const parsed = getCropRecommendationsSchema.safeParse(input);
     if (!parsed.success) {
         const errorMessage = Object.values(parsed.error.flatten().fieldErrors).flat()[0] ?? 'Invalid input. Please check the form and try again.';
         return { success: false, error: errorMessage };
@@ -338,5 +348,3 @@ export async function getCropRecommendationsAction(
         return { success: false, error: 'An unexpected error occurred while generating recommendations. Please try again.' };
     }
 }
-
-    
