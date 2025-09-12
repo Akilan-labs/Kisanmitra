@@ -389,7 +389,6 @@ export default function FarmDashboardPage() {
           ) : (
             !isLoading && !farmData && (
                 <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-24 text-center text-muted-foreground">
-                  <Image src="https://picsum.photos/600/400" alt={t('insights_placeholder_alt')} data-ai-hint="farm landscape" width={300} height={200} className="rounded-lg opacity-50"/>
                   <h2 className="mt-6 text-xl font-semibold font-headline">{t('insights_placeholder_title')}</h2>
                   <p className="mt-2 max-w-sm">{t('insights_placeholder_text')}</p>
                 </div>
