@@ -5,8 +5,7 @@ import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Mic, Search, Sparkles, Volume2, Info, CheckCircle, Target, FileText } from 'lucide-react';
-import Image from 'next/image';
+import { Loader2, Mic, Search, Sparkles, Volume2, Info, CheckCircle, Target, FileText, ScrollText } from 'lucide-react';
 
 import { findGovernmentSchemesAction, speechToTextAction, textToSpeechAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -263,7 +262,7 @@ export default function GovernmentSchemesPage() {
             )}
             {!isLoading && !result && (
               <div className="flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center text-muted-foreground">
-                 <Image src="https://picsum.photos/seed/docs/600/400" alt={t('schemes_placeholder_alt')} data-ai-hint="government building" width={300} height={200} className="rounded-lg opacity-50"/>
+                <ScrollText className="h-12 w-12 text-muted-foreground/50" />
                 <p className="mt-4">{t('schemes_placeholder_text')}</p>
               </div>
             )}
@@ -273,5 +272,3 @@ export default function GovernmentSchemesPage() {
     </div>
   );
 }
-
-    
