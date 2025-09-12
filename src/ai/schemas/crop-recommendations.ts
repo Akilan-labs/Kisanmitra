@@ -24,3 +24,5 @@ export const GetCropRecommendationsOutputSchema = z.object({
   recommendations: z.array(RecommendationSchema).describe('A ranked list of the top 3 recommended crops.'),
 });
 export type GetCropRecommendationsOutput = z.infer<typeof GetCropRecommendationsOutputSchema>;
+
+    

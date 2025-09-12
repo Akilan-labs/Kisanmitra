@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon, TestTube2, Replace } from 'lucide-react';
-import Image from 'next/image';
 
 import { getFarmInsightsAction, getCropRecommendationsAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -361,7 +360,6 @@ export default function FarmDashboardPage() {
             </Card>
           )}
 
-
           {isLoading && (
             <div className="flex h-64 items-center justify-center text-muted-foreground">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -413,3 +411,5 @@ export default function FarmDashboardPage() {
     </div>
   );
 }
+
+    
