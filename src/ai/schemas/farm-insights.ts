@@ -1,3 +1,4 @@
+
 import {z} from 'genkit';
 
 export const GetFarmInsightsInputSchema = z.object({
@@ -8,7 +9,7 @@ export const GetFarmInsightsInputSchema = z.object({
   soilReport: z.string().optional().describe('Optional text data from a soil report (e.g., NPK values, pH).'),
   history: z.string().optional().describe('Optional text describing past treatments, yields, or issues for this field.'),
 });
-export type GetFarmInsightsInput = z.infer<typeof GetFarmInsightsInputSchema>;
+export type getFarmInsightsAction = z.infer<typeof GetFarmInsightsInputSchema>;
 
 const InsightSchema = z.object({
   priority: z.enum(['High', 'Medium', 'Low']).describe('The priority level of the insight.'),

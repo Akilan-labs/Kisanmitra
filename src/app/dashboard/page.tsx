@@ -1,13 +1,14 @@
+
 'use client';
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon, TestTube2 } from 'lucide-react';
+import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon, TestTube2, Replace } from 'lucide-react';
 import Image from 'next/image';
 
-import { getFarmInsightsAction } from '@/app/actions';
+import { getFarmInsightsAction, getCropRecommendationsAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -31,6 +32,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { Textarea } from '@/components/ui/textarea';
+import { GetCropRecommendationsOutput } from '@/ai/schemas/crop-recommendations';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
@@ -41,6 +43,8 @@ const formSchema = z.object({
   soilReport: z.string().optional(),
   history: z.string().optional(),
 });
+
+type FormValues = z.infer<typeof formSchema>;
 
 const getPriorityStyles = (priority: 'Low' | 'Medium' | 'High'): { variant: "default" | "secondary" | "destructive", className: string } => {
     switch (priority) {
@@ -66,11 +70,14 @@ const categoryIconMap: Record<GetFarmInsightsOutput['insights'][0]['category'], 
 export default function FarmDashboardPage() {
   const { language } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<GetFarmInsightsOutput | null>(null);
+  const [isAdvisorLoading, setIsAdvisorLoading] = useState(false);
+  const [farmData, setFarmData] = useState<FormValues | null>(null);
+  const [insightsResult, setInsightsResult] = useState<GetFarmInsightsOutput | null>(null);
+  const [recommendationsResult, setRecommendationsResult] = useState<GetCropRecommendationsOutput | null>(null);
   const { toast } = useToast();
   const { t } = useTranslation(language);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       crop: '',
@@ -80,9 +87,11 @@ export default function FarmDashboardPage() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormValues) {
     setIsLoading(true);
-    setResult(null);
+    setInsightsResult(null);
+    setRecommendationsResult(null);
+    setFarmData(values);
     try {
       const response = await getFarmInsightsAction({ 
         ...values,
@@ -90,7 +99,7 @@ export default function FarmDashboardPage() {
         language 
       });
       if (response.success) {
-        setResult(response.data);
+        setInsightsResult(response.data);
       } else {
         toast({
           title: 'Failed to get insights',
@@ -108,6 +117,39 @@ export default function FarmDashboardPage() {
       setIsLoading(false);
     }
   }
+
+  async function onGetRecommendations() {
+    if (!farmData) return;
+    setIsAdvisorLoading(true);
+    setRecommendationsResult(null);
+    try {
+      const response = await getCropRecommendationsAction({
+        currentCrop: farmData.crop,
+        region: farmData.region,
+        soilReport: farmData.soilReport,
+        history: farmData.history,
+        language
+      });
+       if (response.success) {
+        setRecommendationsResult(response.data);
+      } else {
+        toast({
+          title: 'Failed to get recommendations',
+          description: response.error,
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+       toast({
+        title: t('error'),
+        description: t('unexpected_error'),
+        variant: 'destructive',
+      });
+    } finally {
+        setIsAdvisorLoading(false);
+    }
+  }
+
 
   return (
     <div className="flex h-full flex-col">
@@ -242,41 +284,87 @@ export default function FarmDashboardPage() {
             </div>
           )}
 
-          {result && (
-             <Card>
-                <CardHeader>
-                    <CardTitle>{t('weekly_insights_title')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {result.insights.length > 0 ? result.insights.map((insight, index) => {
-                      const priorityStyles = getPriorityStyles(insight.priority);
-                      return (
-                        <Card key={index} className={cn("flex items-start gap-4 p-4 border-l-4", priorityStyles.className)}>
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                                {categoryIconMap[insight.category]}
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="font-semibold font-headline text-lg">{insight.title}</h3>
-                                    <Badge variant={priorityStyles.variant}>{insight.priority}</Badge>
+          {insightsResult && (
+             <div className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{t('weekly_insights_title')}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {insightsResult.insights.length > 0 ? insightsResult.insights.map((insight, index) => {
+                        const priorityStyles = getPriorityStyles(insight.priority);
+                        return (
+                            <Card key={index} className={cn("flex items-start gap-4 p-4 border-l-4", priorityStyles.className)}>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                                    {categoryIconMap[insight.category]}
                                 </div>
-                                <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{insight.recommendation}</p>
-                                <p className="text-xs text-muted-foreground/80 mt-2">Source: {insight.source}</p>
+                                <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="font-semibold font-headline text-lg">{insight.title}</h3>
+                                        <Badge variant={priorityStyles.variant}>{insight.priority}</Badge>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{insight.recommendation}</p>
+                                    <p className="text-xs text-muted-foreground/80 mt-2">Source: {insight.source}</p>
+                                </div>
+                            </Card>
+                        )
+                        }) : (
+                            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-center text-muted-foreground">
+                            <ShieldCheck className="h-12 w-12 text-green-500"/>
+                            <h3 className="mt-4 text-lg font-semibold">All Clear!</h3>
+                            <p className="mt-1 text-sm">No critical alerts for your farm this week. Keep up the great work!</p>
                             </div>
-                        </Card>
-                      )
-                    }) : (
-                        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-center text-muted-foreground">
-                          <ShieldCheck className="h-12 w-12 text-green-500"/>
-                          <h3 className="mt-4 text-lg font-semibold">All Clear!</h3>
-                          <p className="mt-1 text-sm">No critical alerts for your farm this week. Keep up the great work!</p>
+                        )}
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>AI Crop Switching Advisor</CardTitle>
+                        <CardDescription>Get AI-powered recommendations for alternative crops for the next season.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                       <Button onClick={onGetRecommendations} disabled={isAdvisorLoading}>
+                         {isAdvisorLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Replace className="mr-2 h-4 w-4" />}
+                         {isAdvisorLoading ? 'Analyzing Alternatives...' : 'Find Alternative Crops'}
+                       </Button>
+                       {isAdvisorLoading && <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/></div>}
+                       {recommendationsResult && (
+                        <div className="mt-6 space-y-4">
+                          {recommendationsResult.recommendations.map((rec, index) => (
+                             <Card key={index} className="border-l-4 border-primary">
+                                <CardHeader>
+                                  <div className="flex justify-between items-start">
+                                    <div>
+                                      <CardTitle className="text-xl">#{index + 1}: {rec.cropName}</CardTitle>
+                                      <CardDescription>{rec.suitability.split('.')[0]}.</CardDescription>
+                                    </div>
+                                    <Badge variant="secondary">{rec.profitabilityScore}</Badge>
+                                  </div>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <div>
+                                    <h4 className="font-semibold">Profitability & Risk Analysis</h4>
+                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.profitabilityAnalysis}</p>
+                                  </div>
+                                   <div>
+                                    <h4 className="font-semibold">Suitability Analysis</h4>
+                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.suitability}</p>
+                                  </div>
+                                   <div>
+                                    <h4 className="font-semibold">Actionable Advice</h4>
+                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.actionableAdvice}</p>
+                                  </div>
+                                </CardContent>
+                             </Card>
+                          ))}
                         </div>
-                    )}
-                </CardContent>
-             </Card>
+                       )}
+                    </CardContent>
+                </Card>
+             </div>
           )}
 
-          {!isLoading && !result && (
+          {!isLoading && !insightsResult && (
               <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-24 text-center text-muted-foreground">
                 <Image src="https://picsum.photos/600/400" alt={t('insights_placeholder_alt')} data-ai-hint="farm landscape" width={300} height={200} className="rounded-lg opacity-50"/>
                 <h2 className="mt-6 text-xl font-semibold font-headline">{t('insights_placeholder_title')}</h2>

@@ -54,13 +54,16 @@ import {
     getFarmInsights,
 } from '@/ai/flows/get-farm-insights';
 import {
-    GetFarmInsightsInput,
+    GetFarmInsightsInput as getFarmInsightsAction,
+    GetFarmInsightsInputSchema as getFarmInsightsSchema,
     GetFarmInsightsOutput
 } from '@/ai/schemas/farm-insights';
 import type { DiagnoseCropDiseaseInput, DiagnoseCropDiseaseOutput } from '@/ai/schemas/diagnose-crop-disease';
 import { DiagnoseCropDiseaseInputSchema } from '@/ai/schemas/diagnose-crop-disease';
 import type { PredictYieldInput, PredictYieldOutput } from '@/ai/schemas/predict-yield';
 import { PredictYieldInputSchema } from '@/ai/schemas/predict-yield';
+import { getCropRecommendations } from '@/ai/flows/get-crop-recommendations';
+import { GetCropRecommendationsInput, GetCropRecommendationsOutput, GetCropRecommendationsInputSchema } from '@/ai/schemas/crop-recommendations';
 
 
 export async function diagnoseCropDiseaseAction(
@@ -292,17 +295,9 @@ export async function estimateCarbonCreditsAction(
     }
 }
 
-const getFarmInsightsSchema = z.object({
-  crop: z.string().min(2, 'Please enter a crop name.'),
-  region: z.string().min(2, 'Please enter a region.'),
-  plantingDate: z.string().min(1, 'Please enter a planting date.'),
-  language: z.string(),
-  soilReport: z.string().optional(),
-  history: z.string().optional(),
-});
 
 export async function getFarmInsightsAction(
-  input: GetFarmInsightsInput
+  input: getFarmInsightsAction
 ): Promise<{ success: true; data: GetFarmInsightsOutput } | { success: false; error: string }> {
     const parsed = getFarmInsightsSchema.safeParse(input);
     if (!parsed.success) {
@@ -315,5 +310,22 @@ export async function getFarmInsightsAction(
     } catch (error) {
         console.error(error);
         return { success: false, error: 'An unexpected error occurred while generating insights. Please try again.' };
+    }
+}
+
+export async function getCropRecommendationsAction(
+    input: GetCropRecommendationsInput
+): Promise<{ success: true; data: GetCropRecommendationsOutput } | { success: false; error: string }> {
+    const parsed = GetCropRecommendationsInputSchema.safeParse(input);
+    if (!parsed.success) {
+        const errorMessage = Object.values(parsed.error.flatten().fieldErrors).flat()[0] ?? 'Invalid input. Please check the form and try again.';
+        return { success: false, error: errorMessage };
+    }
+    try {
+        const result = await getCropRecommendations(parsed.data);
+        return { success: true, data: result };
+    } catch (error) {
+        console.error(error);
+        return { success: false, error: 'An unexpected error occurred while generating recommendations. Please try again.' };
     }
 }
