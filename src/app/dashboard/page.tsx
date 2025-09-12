@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon, TestTube2, Replace } from 'lucide-react';
-import Image from 'next/image';
 
 import { getFarmInsightsAction, getCropRecommendationsAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -323,7 +322,10 @@ export default function FarmDashboardPage() {
                                 <CardTitle className="text-xl">#{index + 1}: {rec.cropName}</CardTitle>
                                 <CardDescription>{rec.suitability.split('.')[0]}.</CardDescription>
                               </div>
-                              <Badge variant="secondary">{rec.profitabilityScore}</Badge>
+                              <div className="flex flex-col items-end gap-2">
+                                <Badge variant="secondary">{rec.profitabilityScore}</Badge>
+                                <Badge variant={rec.riskScore.includes('Low') ? 'default' : rec.riskScore.includes('Medium') ? 'secondary' : 'destructive'}>{rec.riskScore}</Badge>
+                              </div>
                             </div>
                           </CardHeader>
                           <CardContent className="space-y-4">
@@ -342,6 +344,12 @@ export default function FarmDashboardPage() {
                           </CardContent>
                         </Card>
                     ))}
+                     {recommendationsResult.recommendations.length === 0 && (
+                        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-center text-muted-foreground">
+                            <h3 className="mt-4 text-lg font-semibold">No Recommendations Available</h3>
+                            <p className="mt-1 text-sm">The AI could not generate recommendations based on the provided crops. Please try a different set of crops.</p>
+                        </div>
+                     )}
                   </div>
                   )}
               </CardContent>

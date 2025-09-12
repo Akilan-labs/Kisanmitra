@@ -28,11 +28,16 @@ const getCropRecommendationsFlow = ai.defineFlow(
     const { candidateCrops } = input;
 
     const dataPromises = candidateCrops.map(async (crop) => {
-        const [disease, market] = await Promise.all([
-            forecastDiseaseOutbreak({crop: crop, region: input.region, language: input.language}).catch(() => null),
-            getMarketPrice({crop: crop, mandi: input.region, language: input.language}).catch(() => null),
-        ]);
-        return { crop, disease, market };
+        try {
+            const [disease, market] = await Promise.all([
+                forecastDiseaseOutbreak({crop: crop, region: input.region, language: input.language}),
+                getMarketPrice({crop: crop, mandi: input.region, language: input.language}),
+            ]);
+            return { crop, disease, market, error: null };
+        } catch (error) {
+            // If any of the sub-fetches fail for a crop, we'll note it but continue.
+            return { crop, disease: null, market: null, error: `Failed to fetch complete data for ${crop}` };
+        }
     });
 
     const cropData = await Promise.all(dataPromises);
@@ -49,8 +54,8 @@ const getCropRecommendationsFlow = ai.defineFlow(
 
       **Instructions:**
 
-      1.  **Analyze Context:** Review all the provided context: the farmer's current crop, region, soil report, and past history. Also review the "Candidate Crop Data" which contains market price trends and disease risk forecasts for several potential alternative crops.
-      2.  **Evaluate Each Candidate Crop:** For each candidate crop in the data, perform a thorough analysis:
+      1.  **Analyze Context:** Review all the provided context: the farmer's current crop, region, soil report, and past history. Also review the "Candidate Crop Data" which contains market price trends and disease risk forecasts for several potential alternative crops. If a crop has an error in the data, you cannot recommend it.
+      2.  **Evaluate Each Candidate Crop:** For each candidate crop in the data that doesn't have an error, perform a thorough analysis:
           *   **Soil-Crop Suitability:** Based on the user's soil report (if available) and general knowledge of the crop's needs, assess how suitable the soil is for this crop. If no soil report is provided, use general knowledge about the soil in the specified region.
           *   **Water Availability/Use:** Consider typical water requirements for the crop versus the general climate of the region.
           *   **Market Analysis:** Analyze the provided market data. Is the price volatile? Is there a stable or upward trend?
@@ -67,7 +72,7 @@ const getCropRecommendationsFlow = ai.defineFlow(
           *   **suitability:** An analysis of the crop's suitability for the farmer's soil and environment.
           *   **actionableAdvice:** Concrete advice for the farmer, such as suggested seed varieties, expected sowing windows, and key disease risks to watch out for.
 
-      **CRITICAL:** You must return a ranked list of up to 3 crop recommendations. If there are fewer than 3 candidates, return recommendations for all of them.
+      **CRITICAL:** You must return a ranked list of up to 3 crop recommendations. If there are fewer than 3 valid candidates, return recommendations for all of them. If you cannot recommend any crops due to errors or high risk, return an empty list.
 
       Respond in the specified language: ${input.language}.
 
