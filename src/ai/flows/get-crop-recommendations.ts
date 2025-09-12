@@ -35,7 +35,7 @@ const getCropRecommendationsFlow = ai.defineFlow(
             ]);
             return { crop, disease, market, error: null };
         } catch (error) {
-            // If any of the sub-fetches fail for a crop, we'll note it but continue.
+            console.error(`Failed to fetch data for ${crop}:`, error);
             return { crop, disease: null, market: null, error: `Failed to fetch complete data for ${crop}` };
         }
     });

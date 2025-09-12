@@ -54,8 +54,7 @@ import {
     getFarmInsights,
 } from '@/ai/flows/get-farm-insights';
 import {
-    GetFarmInsightsInput as getFarmInsightsAction,
-    GetFarmInsightsInputSchema as getFarmInsightsSchema,
+    GetFarmInsightsInput,
     GetFarmInsightsOutput
 } from '@/ai/schemas/farm-insights';
 import type { DiagnoseCropDiseaseInput, DiagnoseCropDiseaseOutput } from '@/ai/schemas/diagnose-crop-disease';
@@ -296,8 +295,18 @@ export async function estimateCarbonCreditsAction(
 }
 
 
+const getFarmInsightsSchema = z.object({
+    crop: z.string().min(2, 'Please enter a crop name.'),
+    region: z.string().min(2, 'Please enter a region.'),
+    plantingDate: z.string(),
+    language: z.string(),
+    soilReport: z.string().optional(),
+    history: z.string().optional(),
+});
+
+
 export async function getFarmInsightsAction(
-  input: getFarmInsightsAction
+  input: GetFarmInsightsInput
 ): Promise<{ success: true; data: GetFarmInsightsOutput } | { success: false; error: string }> {
     const parsed = getFarmInsightsSchema.safeParse(input);
     if (!parsed.success) {
