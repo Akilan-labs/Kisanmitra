@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2, Sparkles, ShieldCheck, CloudSun, Leaf, Info, ShieldAlert, LineChart, Droplets, Calendar as CalendarIcon, TestTube2, Replace } from 'lucide-react';
+import Image from 'next/image';
 
 import { getFarmInsightsAction, getCropRecommendationsAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -305,7 +306,7 @@ export default function FarmDashboardPage() {
                           placeholder="e.g., Chili, Soybean, Marigold"
                           value={alternativeCrops}
                           onChange={(e) => setAlternativeCrops(e.target.value)}
-                          disabled={isAdvisorLoading}
+                          disabled={!farmData || isAdvisorLoading}
                       />
                       <p className="text-sm text-muted-foreground">Enter a comma-separated list of crops you want to evaluate.</p>
                    </div>
