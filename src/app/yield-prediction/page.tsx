@@ -384,14 +384,6 @@ export default function YieldPredictionPage() {
               )}
               {!isLoading && !result && (
                 <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground p-4">
-                  <Image
-                    src="https://picsum.photos/seed/yield/600/400"
-                    alt={t('yield_placeholder_alt')}
-                    data-ai-hint="field crops"
-                    width={300}
-                    height={200}
-                    className="rounded-lg opacity-50"
-                  />
                   <p className="mt-4 max-w-sm">{t('yield_placeholder_text')}</p>
                 </div>
               )}
@@ -402,3 +394,5 @@ export default function YieldPredictionPage() {
     </div>
   );
 }
+
+    
