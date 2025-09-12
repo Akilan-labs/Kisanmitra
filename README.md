@@ -41,7 +41,7 @@ It can be tricky, but here are the exact commands to copy and paste into your te
 
 ```bash
 # Initialize a new Git repository
-git init -b main
+git init
 
 # Add all the files to be tracked by Git
 git add .
@@ -49,11 +49,14 @@ git add .
 # Create your first "commit" (a snapshot of your code)
 git commit -m "Initial commit of KisanMitra project"
 
+# Rename your local branch to "main" to match GitHub's standard
+git branch -M main
+
 # Link your local repository to your GitHub repository
 git remote add origin https://github.com/Akilan-labs/Kisanmitra.git
 
-# Push your code to GitHub
-git push -u origin main
+# Push your code to GitHub, overwriting what's on GitHub
+git push -u -f origin main
 ```
 
 After running these commands, refresh your GitHub page, and you should see all of your project files there!
