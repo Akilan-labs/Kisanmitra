@@ -289,7 +289,7 @@ export default function FarmDashboardPage() {
               </form>
             </Form>
           </Card>
-
+          
           <Card>
               <CardHeader>
                   <CardTitle>AI Crop Switching Advisor</CardTitle>
