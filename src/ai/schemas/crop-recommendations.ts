@@ -7,6 +7,7 @@ export const GetCropRecommendationsInputSchema = z.object({
   language: z.string().describe('The language for the response.'),
   soilReport: z.string().optional().describe('Optional text data from a soil report (e.g., NPK values, pH).'),
   history: z.string().optional().describe('Optional text describing past treatments, yields, or issues for this field.'),
+  candidateCrops: z.array(z.string()).describe('A list of alternative crops to evaluate.'),
 });
 export type GetCropRecommendationsInput = z.infer<typeof GetCropRecommendationsInputSchema>;
 

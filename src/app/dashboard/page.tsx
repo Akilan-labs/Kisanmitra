@@ -33,6 +33,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { Textarea } from '@/components/ui/textarea';
 import { GetCropRecommendationsOutput } from '@/ai/schemas/crop-recommendations';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   crop: z.string().min(2, 'Please enter a crop name.'),
@@ -74,6 +75,7 @@ export default function FarmDashboardPage() {
   const [farmData, setFarmData] = useState<FormValues | null>(null);
   const [insightsResult, setInsightsResult] = useState<GetFarmInsightsOutput | null>(null);
   const [recommendationsResult, setRecommendationsResult] = useState<GetCropRecommendationsOutput | null>(null);
+  const [alternativeCrops, setAlternativeCrops] = useState('');
   const { toast } = useToast();
   const { t } = useTranslation(language);
 
@@ -120,6 +122,16 @@ export default function FarmDashboardPage() {
 
   async function onGetRecommendations() {
     if (!farmData) return;
+     const candidateCrops = alternativeCrops.split(',').map(s => s.trim()).filter(Boolean);
+    if (candidateCrops.length === 0) {
+      toast({
+        title: 'No Alternative Crops',
+        description: 'Please enter at least one alternative crop to analyze.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     setIsAdvisorLoading(true);
     setRecommendationsResult(null);
     try {
@@ -128,7 +140,8 @@ export default function FarmDashboardPage() {
         region: farmData.region,
         soilReport: farmData.soilReport,
         history: farmData.history,
-        language
+        language,
+        candidateCrops: candidateCrops,
       });
        if (response.success) {
         setRecommendationsResult(response.data);
@@ -281,9 +294,20 @@ export default function FarmDashboardPage() {
           <Card>
               <CardHeader>
                   <CardTitle>AI Crop Switching Advisor</CardTitle>
-                  <CardDescription>Get AI-powered recommendations for alternative crops for the next season. Fill out the form above to enable.</CardDescription>
+                  <CardDescription>Get AI-powered recommendations for alternative crops. Fill out the form above, then enter the crops you want to compare below.</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                 <div className="space-y-2">
+                    <Label htmlFor="alternative-crops">Crops to Consider</Label>
+                    <Input
+                        id="alternative-crops"
+                        placeholder="e.g., Chili, Soybean, Marigold"
+                        value={alternativeCrops}
+                        onChange={(e) => setAlternativeCrops(e.target.value)}
+                        disabled={!farmData}
+                    />
+                    <p className="text-sm text-muted-foreground">Enter a comma-separated list of crops you want to evaluate.</p>
+                 </div>
                   <Button onClick={onGetRecommendations} disabled={isAdvisorLoading || !farmData}>
                     {isAdvisorLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Replace className="mr-2 h-4 w-4" />}
                     {isAdvisorLoading ? 'Analyzing Alternatives...' : 'Find Alternative Crops'}

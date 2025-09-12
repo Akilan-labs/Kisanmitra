@@ -25,7 +25,7 @@ const getCropRecommendationsFlow = ai.defineFlow(
   },
   async (input) => {
     
-    const candidateCrops = ["Maize", "Soybean", "Groundnut", "Sorghum", "Millet", "Lentil", "Chickpea", "Cotton"].filter(c => c !== input.currentCrop);
+    const { candidateCrops } = input;
 
     const dataPromises = candidateCrops.map(async (crop) => {
         const [disease, market] = await Promise.all([
@@ -45,7 +45,7 @@ const getCropRecommendationsFlow = ai.defineFlow(
       Candidate Crop Data: ${JSON.stringify(cropData, null, 2)}
     `;
 
-    const prompt = `You are an expert agronomist and farm advisor. Your task is to act as an AI-Driven Crop Switching Advisor. Based on the provided data, recommend the top 3 alternative crops for a farmer for the next planting season.
+    const prompt = `You are an expert agronomist and farm advisor. Your task is to act as an AI-Driven Crop Switching Advisor. Based on the provided data, recommend the top 3 alternative crops for a farmer for the next planting season from the list of candidates.
 
       **Instructions:**
 
@@ -58,7 +58,7 @@ const getCropRecommendationsFlow = ai.defineFlow(
       3.  **Calculate Profitability and Risk:** For each candidate, create a "Profitability Score" (e.g., "High", "Medium", "Low") and a "Risk Score" (e.g., "High", "Medium", "Low").
           *   **Profitability** should be a synthesis of market price trends and potential yield (based on soil suitability).
           *   **Risk** should be a synthesis of market price volatility and disease/pest risk.
-      4.  **Rank and Select Top 3:** Based on your analysis, select the top 3 best alternative crops. The best crops are typically those with high profitability and low-to-medium risk.
+      4.  **Rank and Select Top 3:** Based on your analysis, select the top 3 best alternative crops from the candidates. The best crops are typically those with high profitability and low-to-medium risk.
       5.  **Generate Detailed Recommendations:** For each of the top 3 crops, provide a detailed breakdown in the required output format:
           *   **cropName:** The name of the crop.
           *   **profitabilityScore:** The calculated profitability score (e.g., "High Profitability").
@@ -67,7 +67,7 @@ const getCropRecommendationsFlow = ai.defineFlow(
           *   **suitability:** An analysis of the crop's suitability for the farmer's soil and environment.
           *   **actionableAdvice:** Concrete advice for the farmer, such as suggested seed varieties, expected sowing windows, and key disease risks to watch out for.
 
-      **CRITICAL:** You must return a ranked list of exactly 3 crop recommendations.
+      **CRITICAL:** You must return a ranked list of up to 3 crop recommendations. If there are fewer than 3 candidates, return recommendations for all of them.
 
       Respond in the specified language: ${input.language}.
 
