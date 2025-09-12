@@ -290,72 +290,75 @@ export default function FarmDashboardPage() {
               </form>
             </Form>
           </Card>
-          
-          <Card>
-              <CardHeader>
-                  <CardTitle>AI Crop Switching Advisor</CardTitle>
-                  <CardDescription>Get AI-powered recommendations for alternative crops. Fill out the form above, then enter the crops you want to compare below.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                 <div className="space-y-2">
-                    <Label htmlFor="alternative-crops">Crops to Consider</Label>
-                    <Input
-                        id="alternative-crops"
-                        placeholder="e.g., Chili, Soybean, Marigold"
-                        value={alternativeCrops}
-                        onChange={(e) => setAlternativeCrops(e.target.value)}
-                        disabled={!farmData}
-                    />
-                    <p className="text-sm text-muted-foreground">Enter a comma-separated list of crops you want to evaluate.</p>
-                 </div>
-                  <Button onClick={onGetRecommendations} disabled={isAdvisorLoading || !farmData}>
-                    {isAdvisorLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Replace className="mr-2 h-4 w-4" />}
-                    {isAdvisorLoading ? 'Analyzing Alternatives...' : 'Find Alternative Crops'}
-                  </Button>
-                  {isAdvisorLoading && <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/></div>}
-                  
-                  {recommendationsResult && (
-                  <div className="mt-6 space-y-4">
-                    {recommendationsResult.recommendations.map((rec, index) => (
-                        <Card key={index} className="border-l-4 border-primary">
-                          <CardHeader>
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <CardTitle className="text-xl">#{index + 1}: {rec.cropName}</CardTitle>
-                                <CardDescription>{rec.suitability.split('.')[0]}.</CardDescription>
+
+          {farmData && (
+            <Card>
+                <CardHeader>
+                    <CardTitle>AI Crop Switching Advisor</CardTitle>
+                    <CardDescription>Get AI-powered recommendations for alternative crops. Enter the crops you want to compare below.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                   <div className="space-y-2">
+                      <Label htmlFor="alternative-crops">Crops to Consider</Label>
+                      <Input
+                          id="alternative-crops"
+                          placeholder="e.g., Chili, Soybean, Marigold"
+                          value={alternativeCrops}
+                          onChange={(e) => setAlternativeCrops(e.target.value)}
+                          disabled={isAdvisorLoading}
+                      />
+                      <p className="text-sm text-muted-foreground">Enter a comma-separated list of crops you want to evaluate.</p>
+                   </div>
+                    <Button onClick={onGetRecommendations} disabled={isAdvisorLoading || !farmData}>
+                      {isAdvisorLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Replace className="mr-2 h-4 w-4" />}
+                      {isAdvisorLoading ? 'Analyzing Alternatives...' : 'Find Alternative Crops'}
+                    </Button>
+                    
+                    {isAdvisorLoading && <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/></div>}
+                    
+                    {recommendationsResult && (
+                    <div className="mt-6 space-y-4">
+                      {recommendationsResult.recommendations.map((rec, index) => (
+                          <Card key={index} className="border-l-4 border-primary">
+                            <CardHeader>
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <CardTitle className="text-xl">#{index + 1}: {rec.cropName}</CardTitle>
+                                  <CardDescription>{rec.suitability.split('.')[0]}.</CardDescription>
+                                </div>
+                                <div className="flex flex-col items-end gap-2">
+                                  <Badge variant="secondary">{rec.profitabilityScore}</Badge>
+                                  <Badge variant={rec.riskScore.includes('Low') ? 'default' : rec.riskScore.includes('Medium') ? 'secondary' : 'destructive'}>{rec.riskScore}</Badge>
+                                </div>
                               </div>
-                              <div className="flex flex-col items-end gap-2">
-                                <Badge variant="secondary">{rec.profitabilityScore}</Badge>
-                                <Badge variant={rec.riskScore.includes('Low') ? 'default' : rec.riskScore.includes('Medium') ? 'secondary' : 'destructive'}>{rec.riskScore}</Badge>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              <div>
+                                <h4 className="font-semibold">Profitability & Risk Analysis</h4>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.profitabilityAnalysis}</p>
                               </div>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div>
-                              <h4 className="font-semibold">Profitability & Risk Analysis</h4>
-                              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.profitabilityAnalysis}</p>
-                            </div>
-                              <div>
-                              <h4 className="font-semibold">Suitability Analysis</h4>
-                              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.suitability}</p>
-                            </div>
-                              <div>
-                              <h4 className="font-semibold">Actionable Advice</h4>
-                              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.actionableAdvice}</p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                    ))}
-                     {recommendationsResult.recommendations.length === 0 && (
-                        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-center text-muted-foreground">
-                            <h3 className="mt-4 text-lg font-semibold">No Recommendations Available</h3>
-                            <p className="mt-1 text-sm">The AI could not generate recommendations based on the provided crops. Please try a different set of crops.</p>
-                        </div>
-                     )}
-                  </div>
-                  )}
-              </CardContent>
-          </Card>
+                                <div>
+                                <h4 className="font-semibold">Suitability Analysis</h4>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.suitability}</p>
+                              </div>
+                                <div>
+                                <h4 className="font-semibold">Actionable Advice</h4>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{rec.actionableAdvice}</p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                      ))}
+                       {recommendationsResult.recommendations.length === 0 && (
+                          <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-center text-muted-foreground">
+                              <h3 className="mt-4 text-lg font-semibold">No Recommendations Available</h3>
+                              <p className="mt-1 text-sm">The AI could not generate recommendations based on the provided crops. Please try a different set of crops.</p>
+                          </div>
+                       )}
+                    </div>
+                    )}
+                </CardContent>
+            </Card>
+          )}
 
 
           {isLoading && (
