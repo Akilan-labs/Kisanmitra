@@ -66,7 +66,7 @@ Our goal is to make farming **smarter, sustainable, and profitable** using **AI,
 
 | Component            | Target          | Achieved                          |
 |----------------------|----------------|-----------------------------------|
-| Disease Detection    | 87–92% accuracy| Robust under poor-quality images  |
+| Disease Detection    | 87% accuracy| Robust under poor-quality images  |
 | Yield Prediction     | ±12%           | Uses soil + NDVI fusion           |
 | Market Forecasting   | ±10%           | Time-series forecasting + APIs    |
 | STT/TTS Latency      | <1s            | Dialect-optimized                 |
